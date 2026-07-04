@@ -1,0 +1,145 @@
+name: Vierer
+world: Bedwars
+group: 4x4
+minPlayers: 8
+maxInTeam: 4
+maxPlayers: 16
+allowSpectate: true
+
+teams:
+  Red:
+    color: RED
+    spawn:
+      x: 80
+      y: 65
+      z: 80
+    bed:
+      x: 78
+      y: 65
+      z: 80
+    shop:
+      x: 82
+      y: 65
+      z: 78
+    upgrade:
+      x: 82
+      y: 65
+      z: 82
+    iron-generator:
+      x: 80
+      y: 65
+      z: 78
+    gold-generator:
+      x: 80
+      y: 65
+      z: 82
+
+  Blue:
+    color: BLUE
+    spawn:
+      x: -80
+      y: 65
+      z: 80
+    bed:
+      x: -78
+      y: 65
+      z: 80
+    shop:
+      x: -82
+      y: 65
+      z: 78
+    upgrade:
+      x: -82
+      y: 65
+      z: 82
+    iron-generator:
+      x: -80
+      y: 65
+      z: 78
+    gold-generator:
+      x: -80
+      y: 65
+      z: 82
+
+  Green:
+    color: GREEN
+    spawn:
+      x: 80
+      y: 65
+      z: -80
+    bed:
+      x: 78
+      y: 65
+      z: -80
+    shop:
+      x: 82
+      y: 65
+      z: -78
+    upgrade:
+      x: 82
+      y: 65
+      z: -82
+    iron-generator:
+      x: 80
+      y: 65
+      z: -78
+    gold-generator:
+      x: 80
+      y: 65
+      z: -82
+
+  Yellow:
+    color: YELLOW
+    spawn:
+      x: -80
+      y: 65
+      z: -80
+    bed:
+      x: -78
+      y: 65
+      z: -80
+    shop:
+      x: -82
+      y: 65
+      z: -78
+    upgrade:
+      x: -82
+      y: 65
+      z: -82
+    iron-generator:
+      x: -80
+      y: 65
+      z: -78
+    gold-generator:
+      x: -80
+      y: 65
+      z: -82
+
+generators:
+  diamond:
+    - x: 0
+      y: 65
+      z: 50
+    - x: 50
+      y: 65
+      z: 0
+    - x: 0
+      y: 65
+      z: -50
+    - x: -50
+      y: 65
+      z: 0
+  emerald:
+    - x: 0
+      y: 65
+      z: 0
+
+waiting-lobby:
+  x: 0
+  y: 100
+  z: 0
+
+spectator-spawn:
+  x: 0
+  y: 80
+  z: 0

@@ -1,0 +1,109 @@
+team-upgrades:
+  sharpness:
+    name: '&eSchaerfe'
+    material: IRON_SWORD
+    tiers:
+      tier-1:
+        cost: 4
+        currency: diamond
+        enchant: SHARPNESS:1
+
+  protection:
+    name: '&eSchutz'
+    material: IRON_CHESTPLATE
+    tiers:
+      tier-1:
+        cost: 2
+        currency: diamond
+        enchant: PROTECTION:1
+      tier-2:
+        cost: 4
+        currency: diamond
+        enchant: PROTECTION:2
+      tier-3:
+        cost: 8
+        currency: diamond
+        enchant: PROTECTION:3
+      tier-4:
+        cost: 16
+        currency: diamond
+        enchant: PROTECTION:4
+
+  haste:
+    name: '&eEile'
+    material: GOLDEN_PICKAXE
+    tiers:
+      tier-1:
+        cost: 2
+        currency: diamond
+        effect: FAST_DIGGING:0:1
+      tier-2:
+        cost: 4
+        currency: diamond
+        effect: FAST_DIGGING:0:2
+
+  forge:
+    name: '&eSchmiede'
+    material: FURNACE
+    tiers:
+      tier-1:
+        cost: 2
+        currency: diamond
+        generators: '+50%'
+      tier-2:
+        cost: 4
+        currency: diamond
+        generators: '+100%'
+      tier-3:
+        cost: 6
+        currency: diamond
+        generators: 'spawn-emeralds'
+      tier-4:
+        cost: 8
+        currency: diamond
+        generators: '+200%'
+
+  heal-pool:
+    name: '&eHeilpool'
+    material: BEACON
+    tiers:
+      tier-1:
+        cost: 3
+        currency: diamond
+        effect: REGENERATION:0:1
+
+  dragon-buff:
+    name: '&eDrachenbuff'
+    material: DRAGON_EGG
+    tiers:
+      tier-1:
+        cost: 5
+        currency: diamond
+
+traps:
+  its-a-trap:
+    name: '&eAlarmfalle'
+    material: TRIPWIRE_HOOK
+    cost: 1
+    currency: diamond
+    effect: BLINDNESS:5:1
+
+  counter-offensive:
+    name: '&eGegenangriff'
+    material: FEATHER
+    cost: 1
+    currency: diamond
+    effect: SPEED:15:1
+
+  alarm:
+    name: '&eAlarm'
+    material: REDSTONE_TORCH
+    cost: 1
+    currency: diamond
+
+  miner-fatigue:
+    name: '&eGrabungsmuedigkeit'
+    material: IRON_PICKAXE
+    cost: 1
+    currency: diamond
+    effect: SLOW_DIGGING:10:1

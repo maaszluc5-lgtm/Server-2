@@ -1,0 +1,49 @@
+iron:
+  delay: 2
+  amount: 1
+  spawn-limit: 48
+  display-name: '&fEisen'
+  material: IRON_INGOT
+
+gold:
+  delay: 6
+  amount: 1
+  spawn-limit: 16
+  display-name: '&6Gold'
+  material: GOLD_INGOT
+
+diamond:
+  delay: 30
+  amount: 1
+  spawn-limit: 8
+  display-name: '&bDiamant'
+  material: DIAMOND
+  tier-upgrades:
+    tier-2:
+      start-after: 360
+      delay: 20
+      announce: true
+      color: '&b'
+    tier-3:
+      start-after: 1080
+      delay: 12
+      announce: true
+      color: '&b'
+
+emerald:
+  delay: 60
+  amount: 1
+  spawn-limit: 4
+  display-name: '&2Smaragd'
+  material: EMERALD
+  tier-upgrades:
+    tier-2:
+      start-after: 720
+      delay: 40
+      announce: true
+      color: '&2'
+    tier-3:
+      start-after: 1440
+      delay: 25
+      announce: true
+      color: '&2'

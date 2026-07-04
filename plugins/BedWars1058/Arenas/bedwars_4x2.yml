@@ -1,0 +1,139 @@
+name: Duo
+world: Bedwars
+group: 4x2
+minPlayers: 4
+maxInTeam: 2
+maxPlayers: 8
+allowSpectate: true
+
+teams:
+  Red:
+    color: RED
+    spawn:
+      x: 60
+      y: 65
+      z: 60
+    bed:
+      x: 58
+      y: 65
+      z: 60
+    shop:
+      x: 62
+      y: 65
+      z: 58
+    upgrade:
+      x: 62
+      y: 65
+      z: 62
+    iron-generator:
+      x: 60
+      y: 65
+      z: 58
+    gold-generator:
+      x: 60
+      y: 65
+      z: 62
+
+  Blue:
+    color: BLUE
+    spawn:
+      x: -60
+      y: 65
+      z: 60
+    bed:
+      x: -58
+      y: 65
+      z: 60
+    shop:
+      x: -62
+      y: 65
+      z: 58
+    upgrade:
+      x: -62
+      y: 65
+      z: 62
+    iron-generator:
+      x: -60
+      y: 65
+      z: 58
+    gold-generator:
+      x: -60
+      y: 65
+      z: 62
+
+  Green:
+    color: GREEN
+    spawn:
+      x: 60
+      y: 65
+      z: -60
+    bed:
+      x: 58
+      y: 65
+      z: -60
+    shop:
+      x: 62
+      y: 65
+      z: -58
+    upgrade:
+      x: 62
+      y: 65
+      z: -62
+    iron-generator:
+      x: 60
+      y: 65
+      z: -58
+    gold-generator:
+      x: 60
+      y: 65
+      z: -62
+
+  Yellow:
+    color: YELLOW
+    spawn:
+      x: -60
+      y: 65
+      z: -60
+    bed:
+      x: -58
+      y: 65
+      z: -60
+    shop:
+      x: -62
+      y: 65
+      z: -58
+    upgrade:
+      x: -62
+      y: 65
+      z: -62
+    iron-generator:
+      x: -60
+      y: 65
+      z: -58
+    gold-generator:
+      x: -60
+      y: 65
+      z: -62
+
+generators:
+  diamond:
+    - x: 0
+      y: 65
+      z: 40
+    - x: 0
+      y: 65
+      z: -40
+  emerald:
+    - x: 0
+      y: 65
+      z: 0
+
+waiting-lobby:
+  x: 0
+  y: 100
+  z: 0
+
+spectator-spawn:
+  x: 0
+  y: 80
+  z: 0

@@ -22,7 +22,25 @@ Dieser Server verwendet **Multiverse-Core** zur Verwaltung von 10 verschiedenen 
 ## Benötigte Plugins
 
 - [Multiverse-Core](https://github.com/Multiverse/Multiverse-Core) - Welten-Management
-- [VoidGenerator](https://www.spigotmc.org/resources/voidgenerator.25void/) - Für die Skyblock-Welt
+- [VoidGenerator](https://www.spigotmc.org/resources/voidgenerator.25void/) - Für Skyblock & Bedwars
+- [BedWars1058](https://www.spigotmc.org/resources/bedwars1058.50942/) - Bedwars-Plugin
+
+## Bedwars
+
+Komplett konfiguriert mit deutschem Shop, Upgrades und 3 Arena-Modi:
+
+| Modus | Teams | Spieler pro Team | Max Spieler |
+|-------|-------|-----------------|-------------|
+| 4x1 (Solo) | 4 | 1 | 4 |
+| 4x2 (Duo) | 4 | 2 | 8 |
+| 4x4 (Vierer) | 4 | 4 | 16 |
+
+Befehle:
+```
+/bw join <Arena>    - Arena beitreten
+/bw leave           - Arena verlassen
+/bw stats           - Statistiken anzeigen
+```
 
 ## Befehle
 

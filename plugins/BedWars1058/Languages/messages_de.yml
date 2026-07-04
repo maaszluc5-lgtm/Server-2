@@ -1,0 +1,81 @@
+prefix: '&c&lBW &8| '
+
+game:
+  start: '%bw_lang_prefix%&eDas Spiel startet in &c%bw_seconds% &eSekunden!'
+  started: '%bw_lang_prefix%&aDas Spiel hat begonnen!'
+  end: '%bw_lang_prefix%&eDas Spiel ist vorbei!'
+  bed-destroyed: '%bw_lang_prefix%&c%bw_team_color%%bw_team%&c''s Bett wurde von &7%bw_player% &czerstoert!'
+  bed-destroyed-own: '%bw_lang_prefix%&cDein Bett wurde zerstoert! Du kannst nicht mehr respawnen!'
+  kill: '%bw_lang_prefix%&7%bw_player_color%%bw_player% &7wurde von &c%bw_killer_color%%bw_killer% &7getoetet!'
+  final-kill: '%bw_lang_prefix%&7%bw_player_color%%bw_player% &7wurde von &c%bw_killer_color%%bw_killer% &7endgueltig getoetet!'
+  team-eliminated: '%bw_lang_prefix%&c%bw_team_color%%bw_team% &cwurde eliminiert!'
+  winner: '%bw_lang_prefix%&6%bw_team_color%%bw_team% &6hat gewonnen!'
+  rejoin: '%bw_lang_prefix%&e%bw_player% &eist wieder beigetreten!'
+  leave: '%bw_lang_prefix%&7%bw_player% &7hat das Spiel verlassen!'
+  countdown: '%bw_lang_prefix%&eDas Spiel startet in &c%bw_time% &eSekunden!'
+  respawn: '%bw_lang_prefix%&aDu respawnst in &c%bw_time% &aSekunden!'
+  respawned: '%bw_lang_prefix%&aDu bist respawnt!'
+
+shop:
+  blocks: '&eBlocke'
+  melee: '&eNahkampf'
+  armor: '&eRuestung'
+  tools: '&eWerkzeuge'
+  ranged: '&eFernkampf'
+  potions: '&eTranke'
+  utility: '&eNuetzliches'
+
+scoreboard:
+  lobby:
+    title: '&c&lBEDWARS'
+    lines:
+      - ''
+      - '&fKarte: &a%bw_map%'
+      - '&fSpieler: &a%bw_on%/%bw_max%'
+      - ''
+      - '&fModus: &a%bw_group%'
+      - ''
+      - '&fWarten...'
+      - ''
+      - '&ewww.deinserver.de'
+  game:
+    title: '&c&lBEDWARS'
+    lines:
+      - ''
+      - '&c%bw_team_1% &f%bw_team_1_status%'
+      - '&9%bw_team_2% &f%bw_team_2_status%'
+      - '&a%bw_team_3% &f%bw_team_3_status%'
+      - '&e%bw_team_4% &f%bw_team_4_status%'
+      - ''
+      - '&fKills: &a%bw_kills%'
+      - '&fBetten: &a%bw_beds%'
+      - ''
+      - '&ewww.deinserver.de'
+
+teams:
+  red: '&cRot'
+  blue: '&9Blau'
+  green: '&aGruen'
+  yellow: '&eGelb'
+  aqua: '&bAqua'
+  white: '&fWeiss'
+  pink: '&dRosa'
+  gray: '&7Grau'
+
+upgrades:
+  sharpness: '&eSchaerfe'
+  protection: '&eSchutz'
+  haste: '&eEile'
+  forge: '&eSchmiede'
+  heal-pool: '&eHeilpool'
+  dragon-buff: '&eDrachenbuff'
+  trap: '&eFalle'
+  its-a-trap: '&eAlarmfalle'
+  counter-offensive: '&eGegenangriff'
+  miner-fatigue: '&eGrabungsmuedigkeit'
+
+commands:
+  not-playing: '%bw_lang_prefix%&cDu spielst kein Bedwars!'
+  arena-not-found: '%bw_lang_prefix%&cArena nicht gefunden!'
+  arena-full: '%bw_lang_prefix%&cDie Arena ist voll!'
+  already-in-game: '%bw_lang_prefix%&cDu bist bereits in einem Spiel!'

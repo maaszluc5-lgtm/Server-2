@@ -1,0 +1,238 @@
+quick-buy:
+  enabled: true
+  rows: 3
+
+categories:
+  blocks:
+    slot: 0
+    material: TERRACOTTA
+    name: '&eBlocke'
+    items:
+      wool:
+        material: WHITE_WOOL
+        amount: 16
+        cost: 4
+        currency: iron
+        name: '&fWolle'
+      clay:
+        material: TERRACOTTA
+        amount: 16
+        cost: 12
+        currency: iron
+        name: '&6Hartgebrannter Ton'
+      blast-glass:
+        material: END_STONE
+        amount: 12
+        cost: 24
+        currency: iron
+        name: '&fEndstein'
+      wood:
+        material: OAK_PLANKS
+        amount: 16
+        cost: 4
+        currency: gold
+        name: '&6Holzplanken'
+      obsidian:
+        material: OBSIDIAN
+        amount: 4
+        cost: 4
+        currency: emerald
+        name: '&5Obsidian'
+
+  melee:
+    slot: 1
+    material: GOLDEN_SWORD
+    name: '&eNahkampf'
+    items:
+      stone-sword:
+        material: STONE_SWORD
+        amount: 1
+        cost: 10
+        currency: iron
+        name: '&fSteinschwert'
+      iron-sword:
+        material: IRON_SWORD
+        amount: 1
+        cost: 7
+        currency: gold
+        name: '&fEisenschwert'
+      diamond-sword:
+        material: DIAMOND_SWORD
+        amount: 1
+        cost: 4
+        currency: emerald
+        name: '&bDiamantschwert'
+      knockback-stick:
+        material: STICK
+        amount: 1
+        cost: 5
+        currency: gold
+        name: '&fKnockback-Stock'
+        enchants:
+          - KNOCKBACK:1
+
+  armor:
+    slot: 2
+    material: CHAINMAIL_CHESTPLATE
+    name: '&eRuestung'
+    items:
+      chainmail:
+        material: CHAINMAIL_BOOTS
+        amount: 1
+        cost: 40
+        currency: iron
+        name: '&fKettenruestung'
+        permanent: true
+      iron-armor:
+        material: IRON_BOOTS
+        amount: 1
+        cost: 12
+        currency: gold
+        name: '&fEisenruestung'
+        permanent: true
+      diamond-armor:
+        material: DIAMOND_BOOTS
+        amount: 1
+        cost: 6
+        currency: emerald
+        name: '&bDiamantruestung'
+        permanent: true
+
+  tools:
+    slot: 3
+    material: STONE_PICKAXE
+    name: '&eWerkzeuge'
+    items:
+      shears:
+        material: SHEARS
+        amount: 1
+        cost: 20
+        currency: iron
+        name: '&fSchere'
+        permanent: true
+      wooden-pickaxe:
+        material: WOODEN_PICKAXE
+        amount: 1
+        cost: 10
+        currency: iron
+        name: '&fHolzspitzhacke'
+        enchants:
+          - EFFICIENCY:1
+      wooden-axe:
+        material: WOODEN_AXE
+        amount: 1
+        cost: 10
+        currency: iron
+        name: '&fHolzaxt'
+        enchants:
+          - EFFICIENCY:1
+
+  ranged:
+    slot: 4
+    material: BOW
+    name: '&eFernkampf'
+    items:
+      bow-1:
+        material: BOW
+        amount: 1
+        cost: 12
+        currency: gold
+        name: '&fBogen'
+      bow-2:
+        material: BOW
+        amount: 1
+        cost: 24
+        currency: gold
+        name: '&fBogen (Power I)'
+        enchants:
+          - POWER:1
+      bow-3:
+        material: BOW
+        amount: 1
+        cost: 6
+        currency: emerald
+        name: '&fBogen (Power I, Punch I)'
+        enchants:
+          - POWER:1
+          - PUNCH:1
+      arrow:
+        material: ARROW
+        amount: 8
+        cost: 2
+        currency: gold
+        name: '&fPfeile'
+
+  potions:
+    slot: 5
+    material: BREWING_STAND
+    name: '&eTranke'
+    items:
+      speed:
+        material: POTION
+        amount: 1
+        cost: 1
+        currency: emerald
+        name: '&fSchnelligkeitstrank (45s)'
+        potion: SPEED:45:1
+      jump:
+        material: POTION
+        amount: 1
+        cost: 1
+        currency: emerald
+        name: '&fSprungtrank (45s)'
+        potion: JUMP:45:4
+      invisibility:
+        material: POTION
+        amount: 1
+        cost: 2
+        currency: emerald
+        name: '&fUnsichtbarkeitstrank (30s)'
+        potion: INVISIBILITY:30:1
+
+  utility:
+    slot: 6
+    material: TNT
+    name: '&eNuetzliches'
+    items:
+      golden-apple:
+        material: GOLDEN_APPLE
+        amount: 1
+        cost: 3
+        currency: gold
+        name: '&6Goldener Apfel'
+      fireball:
+        material: FIRE_CHARGE
+        amount: 1
+        cost: 40
+        currency: iron
+        name: '&6Feuerball'
+      tnt:
+        material: TNT
+        amount: 1
+        cost: 4
+        currency: gold
+        name: '&cTNT'
+      ender-pearl:
+        material: ENDER_PEARL
+        amount: 1
+        cost: 4
+        currency: emerald
+        name: '&5Enderperle'
+      water-bucket:
+        material: WATER_BUCKET
+        amount: 1
+        cost: 6
+        currency: gold
+        name: '&9Wassereimer'
+      bridge-egg:
+        material: EGG
+        amount: 1
+        cost: 2
+        currency: emerald
+        name: '&eBruecken-Ei'
+      popup-tower:
+        material: CHEST
+        amount: 1
+        cost: 24
+        currency: iron
+        name: '&eKompakt-Turm'

@@ -1,0 +1,101 @@
+language: de
+storeLink: ''
+lobbyServer: ''
+debug: false
+
+database:
+  type: SQLite
+  host: localhost
+  port: 3306
+  database: bedwars
+  user: root
+  pass: ''
+
+globalChat: false
+disableCrafting: true
+disableEnchanting: true
+disableBrewing: true
+disableAnvil: true
+disableMapBreaking: true
+
+lobbyLocation:
+  world: Lobby
+  x: 0
+  y: 64
+  z: 0
+  yaw: 0
+  pitch: 0
+
+performance-settings:
+  use-packet-listener: true
+  destroy-generators-after-game: true
+  use-chunk-unload: true
+
+countdowns:
+  game-start-countdown: 30
+  game-restart-countdown: 15
+  lobby-countdown: 60
+
+items-shop:
+  quick-buy-length: 21
+  shop-rows: 4
+
+spectator-settings:
+  items:
+    teleporter: true
+    leave: true
+    settings: true
+  fly-speed: 2
+
+shout:
+  cooldown: 30
+  only-shout: false
+
+npc:
+  enabled: true
+  show-in-lobby: true
+
+scoreboard:
+  enabled: true
+  lobby: true
+  game: true
+
+tab-list:
+  enabled: true
+  lobby-header: '&c&lBEDWARS'
+  lobby-footer: '&7Viel Spass beim Spielen!'
+  game-header: '&c&lBEDWARS'
+  game-footer: '&7%bw_server_ip%'
+
+fireball:
+  damage: 4.0
+  knockback-horizontal: 1.5
+  knockback-vertical: 0.65
+  speed-multiplier: 10
+  cooldown: 500
+  make-fire: false
+
+tnt-jump:
+  damage-self: 2.0
+  damage-others: 4.0
+  knockback-horizontal: 2.0
+  knockback-vertical: 1.0
+
+silverfish:
+  speed: 0.25
+  health: 8.0
+  damage: 1.0
+  lifetime: 15
+
+iron-golem:
+  speed: 0.25
+  health: 100.0
+  damage: 4.0
+  lifetime: 240
+
+bed-hologram:
+  enabled: true
+  height: 2.0
+
+start-items-per-slot:
+  wooden-sword: 0
