@@ -1,0 +1,40 @@
+# Gamerules fuer alle Welten - Cheats aktiviert
+# Diese Regeln werden beim Laden jeder Welt angewendet
+
+defaults:
+  sendCommandFeedback: 'true'
+  commandBlockOutput: 'true'
+  reducedDebugInfo: 'false'
+  doImmediateRespawn: 'false'
+
+worlds:
+  Survival:
+    sendCommandFeedback: 'true'
+    commandBlockOutput: 'true'
+  Creative:
+    sendCommandFeedback: 'true'
+    commandBlockOutput: 'true'
+  Nether:
+    sendCommandFeedback: 'true'
+    commandBlockOutput: 'true'
+  End:
+    sendCommandFeedback: 'true'
+    commandBlockOutput: 'true'
+  Skyblock:
+    sendCommandFeedback: 'true'
+    commandBlockOutput: 'true'
+  PvP_Arena:
+    sendCommandFeedback: 'true'
+    commandBlockOutput: 'true'
+  Lobby:
+    sendCommandFeedback: 'true'
+    commandBlockOutput: 'true'
+  Resource:
+    sendCommandFeedback: 'true'
+    commandBlockOutput: 'true'
+  Adventure:
+    sendCommandFeedback: 'true'
+    commandBlockOutput: 'true'
+  Hardcore:
+    sendCommandFeedback: 'true'
+    commandBlockOutput: 'true'

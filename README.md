@@ -1,6 +1,7 @@
-# Minecraft Server - 10 Welten
+# Minecraft Server - 10 Welten (Cheats aktiviert)
 
 Dieser Server verwendet **Multiverse-Core** zur Verwaltung von 10 verschiedenen Welten.
+**Cheats sind in allen Welten aktiviert!** Flugmodus, Befehle und Command-Blocks funktionieren überall.
 
 ## Welten-Übersicht
 
@@ -30,3 +31,20 @@ Dieser Server verwendet **Multiverse-Core** zur Verwaltung von 10 verschiedenen 
 /mv create <Name> <Typ>     - Neue Welt erstellen
 /mv delete <Name>           - Welt löschen
 ```
+
+## Cheats
+
+Cheats sind in allen Welten aktiviert (`allow-cheats=true`, `allowFlight=true`).
+Wichtige Cheat-Befehle:
+
+```
+/gamemode creative <Spieler>    - Kreativmodus
+/give <Spieler> <Item> <Anzahl> - Items geben
+/tp <Spieler> <x> <y> <z>      - Teleportieren
+/time set day                   - Tag setzen
+/weather clear                  - Wetter klären
+/effect give <Spieler> <Effekt> - Effekte geben
+/xp add <Spieler> <Menge>      - XP geben
+```
+
+Siehe `cheats-setup.txt` fuer alle Setup-Befehle.

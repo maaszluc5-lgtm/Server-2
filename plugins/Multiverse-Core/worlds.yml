@@ -1,6 +1,6 @@
 worlds:
   # ============================================
-  # Welt 1: Survival - Hauptwelt
+  # Welt 1: Survival - Hauptwelt (Cheats AN)
   # ============================================
   Survival:
     ==: MVWorld
@@ -33,9 +33,10 @@ worlds:
     generator: 'null'
     environment: NORMAL
     autoLoad: 'true'
+    allowFlight: 'true'
 
   # ============================================
-  # Welt 2: Creative - Flache Kreativwelt
+  # Welt 2: Creative - Flache Kreativwelt (Cheats AN)
   # ============================================
   Creative:
     ==: MVWorld
@@ -69,9 +70,10 @@ worlds:
     environment: NORMAL
     worldtype: FLAT
     autoLoad: 'true'
+    allowFlight: 'true'
 
   # ============================================
-  # Welt 3: Nether
+  # Welt 3: Nether (Cheats AN)
   # ============================================
   Nether:
     ==: MVWorld
@@ -104,9 +106,10 @@ worlds:
     generator: 'null'
     environment: NETHER
     autoLoad: 'true'
+    allowFlight: 'true'
 
   # ============================================
-  # Welt 4: End
+  # Welt 4: End (Cheats AN)
   # ============================================
   End:
     ==: MVWorld
@@ -139,9 +142,10 @@ worlds:
     generator: 'null'
     environment: THE_END
     autoLoad: 'true'
+    allowFlight: 'true'
 
   # ============================================
-  # Welt 5: Skyblock - Void-Welt
+  # Welt 5: Skyblock - Void-Welt (Cheats AN)
   # ============================================
   Skyblock:
     ==: MVWorld
@@ -174,9 +178,10 @@ worlds:
     generator: VoidGenerator
     environment: NORMAL
     autoLoad: 'true'
+    allowFlight: 'true'
 
   # ============================================
-  # Welt 6: PvP Arena
+  # Welt 6: PvP Arena (Cheats AN)
   # ============================================
   PvP_Arena:
     ==: MVWorld
@@ -209,9 +214,10 @@ worlds:
     generator: 'null'
     environment: NORMAL
     autoLoad: 'true'
+    allowFlight: 'true'
 
   # ============================================
-  # Welt 7: Lobby / Hub
+  # Welt 7: Lobby / Hub (Cheats AN)
   # ============================================
   Lobby:
     ==: MVWorld
@@ -244,9 +250,10 @@ worlds:
     generator: 'null'
     environment: NORMAL
     autoLoad: 'true'
+    allowFlight: 'true'
 
   # ============================================
-  # Welt 8: Resource - Farmwelt (regelmässig resetbar)
+  # Welt 8: Resource - Farmwelt (Cheats AN)
   # ============================================
   Resource:
     ==: MVWorld
@@ -279,9 +286,10 @@ worlds:
     generator: 'null'
     environment: NORMAL
     autoLoad: 'true'
+    allowFlight: 'true'
 
   # ============================================
-  # Welt 9: Adventure - Abenteuer-Welt
+  # Welt 9: Adventure - Abenteuer-Welt (Cheats AN)
   # ============================================
   Adventure:
     ==: MVWorld
@@ -314,9 +322,10 @@ worlds:
     generator: 'null'
     environment: NORMAL
     autoLoad: 'true'
+    allowFlight: 'true'
 
   # ============================================
-  # Welt 10: Hardcore - Hardcore Survival
+  # Welt 10: Hardcore - Hardcore Survival (Cheats AN)
   # ============================================
   Hardcore:
     ==: MVWorld
@@ -349,3 +358,4 @@ worlds:
     generator: 'null'
     environment: NORMAL
     autoLoad: 'true'
+    allowFlight: 'true'

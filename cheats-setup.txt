@@ -1,0 +1,75 @@
+# =============================================
+# Cheats-Befehle fuer alle 10 Welten
+# =============================================
+# Fuehre diese Befehle in der Server-Konsole aus,
+# oder kopiere sie in ein CommandBlock/Plugin.
+#
+# Alle Spieler erhalten OP-Rechte fuer Cheat-Befehle.
+# Alternativ: /op <Spielername>
+
+# === Alle Welten: Cheats-Gamerules aktivieren ===
+
+# Survival
+/mv gamerule sendCommandFeedback true Survival
+/mv gamerule commandBlockOutput true Survival
+/mv gamerule reducedDebugInfo false Survival
+
+# Creative
+/mv gamerule sendCommandFeedback true Creative
+/mv gamerule commandBlockOutput true Creative
+/mv gamerule reducedDebugInfo false Creative
+
+# Nether
+/mv gamerule sendCommandFeedback true Nether
+/mv gamerule commandBlockOutput true Nether
+/mv gamerule reducedDebugInfo false Nether
+
+# End
+/mv gamerule sendCommandFeedback true End
+/mv gamerule commandBlockOutput true End
+/mv gamerule reducedDebugInfo false End
+
+# Skyblock
+/mv gamerule sendCommandFeedback true Skyblock
+/mv gamerule commandBlockOutput true Skyblock
+/mv gamerule reducedDebugInfo false Skyblock
+
+# PvP_Arena
+/mv gamerule sendCommandFeedback true PvP_Arena
+/mv gamerule commandBlockOutput true PvP_Arena
+/mv gamerule reducedDebugInfo false PvP_Arena
+
+# Lobby
+/mv gamerule sendCommandFeedback true Lobby
+/mv gamerule commandBlockOutput true Lobby
+/mv gamerule reducedDebugInfo false Lobby
+
+# Resource
+/mv gamerule sendCommandFeedback true Resource
+/mv gamerule commandBlockOutput true Resource
+/mv gamerule reducedDebugInfo false Resource
+
+# Adventure
+/mv gamerule sendCommandFeedback true Adventure
+/mv gamerule commandBlockOutput true Adventure
+/mv gamerule reducedDebugInfo false Adventure
+
+# Hardcore
+/mv gamerule sendCommandFeedback true Hardcore
+/mv gamerule commandBlockOutput true Hardcore
+/mv gamerule reducedDebugInfo false Hardcore
+
+# =============================================
+# Nützliche Cheat-Befehle (funktionieren in allen Welten):
+# =============================================
+# /gamemode creative <Spieler>   - Kreativmodus
+# /gamemode survival <Spieler>   - Überlebensmodus
+# /give <Spieler> <Item> <Anzahl> - Items geben
+# /tp <Spieler> <x> <y> <z>     - Teleportieren
+# /time set day                  - Tag setzen
+# /weather clear                 - Wetter klären
+# /effect give <Spieler> <Effekt> - Effekte geben
+# /enchant <Spieler> <Verzauberung> <Stufe> - Verzaubern
+# /kill <Spieler/Entity>         - Töten
+# /xp add <Spieler> <Menge>     - XP geben
+# /fly                           - Fliegen (mit Plugin)
