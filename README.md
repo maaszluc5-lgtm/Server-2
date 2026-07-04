@@ -48,3 +48,9 @@ Wichtige Cheat-Befehle:
 ```
 
 Siehe `cheats-setup.txt` fuer alle Setup-Befehle.
+
+## Operatoren (OP)
+
+| Spieler | OP-Level | Beschreibung |
+|---------|----------|-------------|
+| **GrassGlas7797** | 4 (Max) | Volle Rechte, alle Befehle, bypassed Spielerlimit |
