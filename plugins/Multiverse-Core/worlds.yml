@@ -1,0 +1,351 @@
+worlds:
+  # ============================================
+  # Welt 1: Survival - Hauptwelt
+  # ============================================
+  Survival:
+    ==: MVWorld
+    hidden: 'false'
+    alias: '&2Survival'
+    color: GREEN
+    style: NORMAL
+    pvp: 'true'
+    scale: '1'
+    respawnWorld: ''
+    allowWeather: 'true'
+    difficulty: NORMAL
+    spawning:
+      animals:
+        spawn: 'true'
+        spawnrate: '-1'
+      monsters:
+        spawn: 'true'
+        spawnrate: '-1'
+    entryfee:
+      amount: '0.0'
+      currency: '-1'
+    hunger: 'true'
+    autoHeal: 'true'
+    adjustSpawn: 'true'
+    portalForm: ALL
+    gameMode: SURVIVAL
+    keepSpawnInMemory: 'true'
+    seed: '123456789'
+    generator: 'null'
+    environment: NORMAL
+    autoLoad: 'true'
+
+  # ============================================
+  # Welt 2: Creative - Flache Kreativwelt
+  # ============================================
+  Creative:
+    ==: MVWorld
+    hidden: 'false'
+    alias: '&eCreative'
+    color: YELLOW
+    style: NORMAL
+    pvp: 'false'
+    scale: '1'
+    respawnWorld: ''
+    allowWeather: 'false'
+    difficulty: PEACEFUL
+    spawning:
+      animals:
+        spawn: 'false'
+        spawnrate: '-1'
+      monsters:
+        spawn: 'false'
+        spawnrate: '-1'
+    entryfee:
+      amount: '0.0'
+      currency: '-1'
+    hunger: 'false'
+    autoHeal: 'true'
+    adjustSpawn: 'true'
+    portalForm: NONE
+    gameMode: CREATIVE
+    keepSpawnInMemory: 'true'
+    seed: '987654321'
+    generator: 'null'
+    environment: NORMAL
+    worldtype: FLAT
+    autoLoad: 'true'
+
+  # ============================================
+  # Welt 3: Nether
+  # ============================================
+  Nether:
+    ==: MVWorld
+    hidden: 'false'
+    alias: '&4Nether'
+    color: RED
+    style: NORMAL
+    pvp: 'true'
+    scale: '8'
+    respawnWorld: 'Survival'
+    allowWeather: 'false'
+    difficulty: HARD
+    spawning:
+      animals:
+        spawn: 'false'
+        spawnrate: '-1'
+      monsters:
+        spawn: 'true'
+        spawnrate: '-1'
+    entryfee:
+      amount: '0.0'
+      currency: '-1'
+    hunger: 'true'
+    autoHeal: 'true'
+    adjustSpawn: 'true'
+    portalForm: ALL
+    gameMode: SURVIVAL
+    keepSpawnInMemory: 'true'
+    seed: '123456789'
+    generator: 'null'
+    environment: NETHER
+    autoLoad: 'true'
+
+  # ============================================
+  # Welt 4: End
+  # ============================================
+  End:
+    ==: MVWorld
+    hidden: 'false'
+    alias: '&5End'
+    color: DARK_PURPLE
+    style: NORMAL
+    pvp: 'true'
+    scale: '1'
+    respawnWorld: 'Survival'
+    allowWeather: 'false'
+    difficulty: HARD
+    spawning:
+      animals:
+        spawn: 'false'
+        spawnrate: '-1'
+      monsters:
+        spawn: 'true'
+        spawnrate: '-1'
+    entryfee:
+      amount: '0.0'
+      currency: '-1'
+    hunger: 'true'
+    autoHeal: 'true'
+    adjustSpawn: 'true'
+    portalForm: ALL
+    gameMode: SURVIVAL
+    keepSpawnInMemory: 'true'
+    seed: '123456789'
+    generator: 'null'
+    environment: THE_END
+    autoLoad: 'true'
+
+  # ============================================
+  # Welt 5: Skyblock - Void-Welt
+  # ============================================
+  Skyblock:
+    ==: MVWorld
+    hidden: 'false'
+    alias: '&bSkyblock'
+    color: AQUA
+    style: NORMAL
+    pvp: 'false'
+    scale: '1'
+    respawnWorld: ''
+    allowWeather: 'true'
+    difficulty: NORMAL
+    spawning:
+      animals:
+        spawn: 'true'
+        spawnrate: '-1'
+      monsters:
+        spawn: 'true'
+        spawnrate: '-1'
+    entryfee:
+      amount: '0.0'
+      currency: '-1'
+    hunger: 'true'
+    autoHeal: 'true'
+    adjustSpawn: 'true'
+    portalForm: NONE
+    gameMode: SURVIVAL
+    keepSpawnInMemory: 'true'
+    seed: '555555555'
+    generator: VoidGenerator
+    environment: NORMAL
+    autoLoad: 'true'
+
+  # ============================================
+  # Welt 6: PvP Arena
+  # ============================================
+  PvP_Arena:
+    ==: MVWorld
+    hidden: 'false'
+    alias: '&cPvP Arena'
+    color: DARK_RED
+    style: NORMAL
+    pvp: 'true'
+    scale: '1'
+    respawnWorld: ''
+    allowWeather: 'false'
+    difficulty: NORMAL
+    spawning:
+      animals:
+        spawn: 'false'
+        spawnrate: '-1'
+      monsters:
+        spawn: 'false'
+        spawnrate: '-1'
+    entryfee:
+      amount: '0.0'
+      currency: '-1'
+    hunger: 'false'
+    autoHeal: 'false'
+    adjustSpawn: 'true'
+    portalForm: NONE
+    gameMode: ADVENTURE
+    keepSpawnInMemory: 'true'
+    seed: '666666666'
+    generator: 'null'
+    environment: NORMAL
+    autoLoad: 'true'
+
+  # ============================================
+  # Welt 7: Lobby / Hub
+  # ============================================
+  Lobby:
+    ==: MVWorld
+    hidden: 'false'
+    alias: '&6Lobby'
+    color: GOLD
+    style: NORMAL
+    pvp: 'false'
+    scale: '1'
+    respawnWorld: ''
+    allowWeather: 'false'
+    difficulty: PEACEFUL
+    spawning:
+      animals:
+        spawn: 'false'
+        spawnrate: '-1'
+      monsters:
+        spawn: 'false'
+        spawnrate: '-1'
+    entryfee:
+      amount: '0.0'
+      currency: '-1'
+    hunger: 'false'
+    autoHeal: 'true'
+    adjustSpawn: 'true'
+    portalForm: NONE
+    gameMode: ADVENTURE
+    keepSpawnInMemory: 'true'
+    seed: '777777777'
+    generator: 'null'
+    environment: NORMAL
+    autoLoad: 'true'
+
+  # ============================================
+  # Welt 8: Resource - Farmwelt (regelmässig resetbar)
+  # ============================================
+  Resource:
+    ==: MVWorld
+    hidden: 'false'
+    alias: '&aResource'
+    color: GREEN
+    style: NORMAL
+    pvp: 'true'
+    scale: '1'
+    respawnWorld: 'Survival'
+    allowWeather: 'true'
+    difficulty: NORMAL
+    spawning:
+      animals:
+        spawn: 'true'
+        spawnrate: '-1'
+      monsters:
+        spawn: 'true'
+        spawnrate: '-1'
+    entryfee:
+      amount: '0.0'
+      currency: '-1'
+    hunger: 'true'
+    autoHeal: 'true'
+    adjustSpawn: 'true'
+    portalForm: NONE
+    gameMode: SURVIVAL
+    keepSpawnInMemory: 'false'
+    seed: '888888888'
+    generator: 'null'
+    environment: NORMAL
+    autoLoad: 'true'
+
+  # ============================================
+  # Welt 9: Adventure - Abenteuer-Welt
+  # ============================================
+  Adventure:
+    ==: MVWorld
+    hidden: 'false'
+    alias: '&dAdventure'
+    color: LIGHT_PURPLE
+    style: NORMAL
+    pvp: 'false'
+    scale: '1'
+    respawnWorld: ''
+    allowWeather: 'true'
+    difficulty: HARD
+    spawning:
+      animals:
+        spawn: 'true'
+        spawnrate: '-1'
+      monsters:
+        spawn: 'true'
+        spawnrate: '-1'
+    entryfee:
+      amount: '0.0'
+      currency: '-1'
+    hunger: 'true'
+    autoHeal: 'true'
+    adjustSpawn: 'true'
+    portalForm: NONE
+    gameMode: ADVENTURE
+    keepSpawnInMemory: 'true'
+    seed: '999999999'
+    generator: 'null'
+    environment: NORMAL
+    autoLoad: 'true'
+
+  # ============================================
+  # Welt 10: Hardcore - Hardcore Survival
+  # ============================================
+  Hardcore:
+    ==: MVWorld
+    hidden: 'false'
+    alias: '&4Hardcore'
+    color: DARK_RED
+    style: BOLD
+    pvp: 'true'
+    scale: '1'
+    respawnWorld: 'Lobby'
+    allowWeather: 'true'
+    difficulty: HARD
+    spawning:
+      animals:
+        spawn: 'true'
+        spawnrate: '-1'
+      monsters:
+        spawn: 'true'
+        spawnrate: '1'
+    entryfee:
+      amount: '0.0'
+      currency: '-1'
+    hunger: 'true'
+    autoHeal: 'false'
+    adjustSpawn: 'true'
+    portalForm: ALL
+    gameMode: SURVIVAL
+    keepSpawnInMemory: 'true'
+    seed: '111111111'
+    generator: 'null'
+    environment: NORMAL
+    autoLoad: 'true'
