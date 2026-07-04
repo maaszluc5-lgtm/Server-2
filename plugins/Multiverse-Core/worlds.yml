@@ -359,3 +359,39 @@ worlds:
     environment: NORMAL
     autoLoad: 'true'
     allowFlight: 'true'
+
+  # ============================================
+  # Welt 11: Bedwars - Bett-Kampfarena (Cheats AN)
+  # ============================================
+  Bedwars:
+    ==: MVWorld
+    hidden: 'false'
+    alias: '&cBedwars'
+    color: RED
+    style: BOLD
+    pvp: 'true'
+    scale: '1'
+    respawnWorld: ''
+    allowWeather: 'false'
+    difficulty: NORMAL
+    spawning:
+      animals:
+        spawn: 'false'
+        spawnrate: '-1'
+      monsters:
+        spawn: 'false'
+        spawnrate: '-1'
+    entryfee:
+      amount: '0.0'
+      currency: '-1'
+    hunger: 'false'
+    autoHeal: 'true'
+    adjustSpawn: 'true'
+    portalForm: NONE
+    gameMode: SURVIVAL
+    keepSpawnInMemory: 'true'
+    seed: '222222222'
+    generator: VoidGenerator
+    environment: NORMAL
+    autoLoad: 'true'
+    allowFlight: 'true'

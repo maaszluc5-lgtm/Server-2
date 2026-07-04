@@ -1,4 +1,4 @@
-# Minecraft Server - 10 Welten (Cheats aktiviert)
+# Minecraft Server - 11 Welten (Cheats aktiviert)
 
 Dieser Server verwendet **Multiverse-Core** zur Verwaltung von 10 verschiedenen Welten.
 **Cheats sind in allen Welten aktiviert!** Flugmodus, Befehle und Command-Blocks funktionieren überall.
@@ -17,6 +17,7 @@ Dieser Server verwendet **Multiverse-Core** zur Verwaltung von 10 verschiedenen 
 | 8 | **Resource** | Survival | Normal | Ja | Farmwelt zum Ressourcen-Sammeln (resetbar) |
 | 9 | **Adventure** | Adventure | Hard | Nein | Abenteuer-Welt mit Quests |
 | 10 | **Hardcore** | Survival | Hard | Ja | Hardcore-Modus ohne Auto-Heilung |
+| 11 | **Bedwars** | Survival | Normal | Ja | Bedwars-Arena (Void-Welt, kein Hunger) |
 
 ## Benötigte Plugins
 

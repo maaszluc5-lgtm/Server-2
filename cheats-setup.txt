@@ -59,6 +59,11 @@
 /mv gamerule commandBlockOutput true Hardcore
 /mv gamerule reducedDebugInfo false Hardcore
 
+# Bedwars
+/mv gamerule sendCommandFeedback true Bedwars
+/mv gamerule commandBlockOutput true Bedwars
+/mv gamerule reducedDebugInfo false Bedwars
+
 # =============================================
 # Nützliche Cheat-Befehle (funktionieren in allen Welten):
 # =============================================

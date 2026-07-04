@@ -43,3 +43,5 @@ worlds:
     generator: default
   Hardcore:
     generator: default
+  Bedwars:
+    generator: VoidGenerator

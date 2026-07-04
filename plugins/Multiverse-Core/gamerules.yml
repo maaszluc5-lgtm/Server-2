@@ -38,3 +38,6 @@ worlds:
   Hardcore:
     sendCommandFeedback: 'true'
     commandBlockOutput: 'true'
+  Bedwars:
+    sendCommandFeedback: 'true'
+    commandBlockOutput: 'true'
