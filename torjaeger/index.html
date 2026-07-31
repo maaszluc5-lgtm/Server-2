@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06130d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Torjäger">
+<title>Torjäger — WM · EM · Elfmeter · Sammelalbum</title>
+<style>
+  :root{
+    --ground:#06130d; --panel:#0d2019; --panel2:#123024; --raise:#17402f;
+    --line:#20563f; --grass:#2fe071; --grass-deep:#16a34a; --gold:#ffc63d;
+    --text:#eafff3; --muted:#7fb59c; --danger:#ff5d5d;
+    --r:16px; --maxw:520px; --shadow:0 18px 50px rgba(0,0,0,.55);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:radial-gradient(120% 80% at 50% -10%, #0f2c20 0%, var(--ground) 60%),var(--ground); color:var(--text); min-height:100dvh; -webkit-tap-highlight-color:transparent;}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:14px 14px 40px; position:relative}
+  .top{display:flex; align-items:center; gap:10px; position:sticky; top:0; z-index:20; padding:10px 12px; margin:-4px -4px 12px; border-radius:14px; background:linear-gradient(180deg, rgba(9,26,19,.96), rgba(9,26,19,.82)); backdrop-filter:blur(8px); border:1px solid var(--line);}
+  .brand{font-weight:900; letter-spacing:.04em; text-transform:uppercase; font-size:16px; display:flex; gap:7px; align-items:center}
+  .brand b{color:var(--grass)}
+  .spacer{flex:1}
+  .coins{display:flex; align-items:center; gap:6px; font-weight:800; font-size:15px; background:linear-gradient(180deg,#3a2f08,#241d05); color:var(--gold); border:1px solid #6b520f; padding:6px 11px; border-radius:999px; font-variant-numeric:tabular-nums;}
+  .screen{display:none; animation:fade .28s ease}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0; transform:translateY(6px)}to{opacity:1; transform:none}}
+  h1.hero{font-size:clamp(30px,10vw,46px); line-height:.95; margin:10px 2px 2px; font-weight:900; letter-spacing:.01em; text-transform:uppercase; text-wrap:balance;}
+  h1.hero span{color:var(--grass)}
+  .sub{color:var(--muted); margin:6px 2px 16px; font-size:14px}
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  .tile{position:relative; overflow:hidden; text-align:left; cursor:pointer; border:1px solid var(--line); border-radius:var(--r); padding:16px 14px 14px; background:linear-gradient(165deg,var(--panel2),var(--panel)); color:var(--text); transition:transform .12s ease; box-shadow:var(--shadow); min-height:124px; display:flex; flex-direction:column; justify-content:space-between;}
+  .tile:active{transform:scale(.97)}
+  .tile:focus-visible{outline:3px solid var(--grass); outline-offset:2px}
+  .tile .ic{font-size:30px}
+  .tile .t{font-weight:900; text-transform:uppercase; letter-spacing:.02em; font-size:16px; margin-top:8px}
+  .tile .d{color:var(--muted); font-size:12px; margin-top:2px}
+  .tile.wide{grid-column:1/-1; min-height:auto; flex-direction:row; align-items:center; gap:14px}
+  .tile.wide .ic{font-size:26px}
+  .tile .glow{position:absolute; inset:auto -30% -50% auto; width:150px; height:150px; background:radial-gradient(circle,var(--grass),transparent 65%); opacity:.14}
+  .stat-row{display:flex; gap:10px; margin:14px 0 4px}
+  .stat{flex:1; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 12px}
+  .stat .k{color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.06em}
+  .stat .v{font-weight:900; font-size:20px; font-variant-numeric:tabular-nums; margin-top:2px}
+  .btn{appearance:none; border:0; cursor:pointer; font:inherit; font-weight:800; padding:13px 18px; border-radius:12px; letter-spacing:.02em; background:linear-gradient(180deg,var(--grass),var(--grass-deep)); color:#04170d; box-shadow:0 8px 22px rgba(28,180,90,.35); transition:transform .1s ease;}
+  .btn:active{transform:translateY(1px) scale(.99)}
+  .btn.ghost{background:transparent; color:var(--text); border:1px solid var(--line); box-shadow:none}
+  .btn.gold{background:linear-gradient(180deg,#ffd766,#e8a81a); color:#2a1c00; box-shadow:0 8px 22px rgba(232,168,26,.3)}
+  .btn:disabled{opacity:.45; cursor:not-allowed}
+  .btn.block{display:block; width:100%}
+  .backrow{display:flex; align-items:center; gap:10px; margin:2px 0 12px}
+  .back{background:var(--panel); border:1px solid var(--line); color:var(--text); width:40px; height:40px; border-radius:11px; font-size:18px; cursor:pointer}
+  .backrow h2{font-size:19px; font-weight:900; text-transform:uppercase; letter-spacing:.02em; margin:0}
+  .arena{background:linear-gradient(180deg,#0b2419,#08160f); border:1px solid var(--line); border-radius:18px; padding:14px 12px 12px; box-shadow:var(--shadow)}
+  .scoreboard{display:flex; align-items:center; justify-content:center; gap:12px; margin:2px 0 12px; font-weight:900}
+  .scoreboard .team{flex:1; text-align:center; font-size:13px; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .scoreboard .team.you{color:var(--grass)}
+  .scoreboard .sc{font-size:30px; font-variant-numeric:tabular-nums; min-width:34px; text-align:center}
+  .scoreboard .sc.you{color:var(--grass)}
+  .dots{display:flex; gap:4px; justify-content:center; margin-top:5px; flex-wrap:wrap}
+  .dot{width:9px; height:9px; border-radius:50%; background:#0c281c; border:1px solid var(--line)}
+  .dot.g{background:var(--grass); border-color:var(--grass)}
+  .dot.m{background:var(--danger); border-color:var(--danger)}
+  .goalwrap{position:relative; margin:6px 0 4px; aspect-ratio:16/10}
+  .goal{position:absolute; inset:0 6% 22% 6%; border:6px solid #eef7f1; border-bottom:none; border-radius:8px 8px 0 0; background:repeating-linear-gradient(90deg,rgba(255,255,255,.04) 0 9px,transparent 9px 18px),repeating-linear-gradient(0deg,rgba(255,255,255,.04) 0 9px,transparent 9px 18px); box-shadow:inset 0 0 40px rgba(0,0,0,.4)}
+  .turf{position:absolute; left:0; right:0; bottom:0; height:24%; background:linear-gradient(180deg,#1c7a44,#0c3a20); border-top:2px solid rgba(255,255,255,.25)}
+  .zones{position:absolute; inset:0 6% 22% 6%; display:grid; grid-template-columns:1fr 1fr 1fr; grid-template-rows:1fr 1fr}
+  .zone{cursor:pointer; transition:background .12s; border-radius:6px; border:1px dashed transparent}
+  .zone.pick:hover,.zone.pick:active{background:rgba(47,224,113,.16); border-color:rgba(47,224,113,.5)}
+  .keeper{position:absolute; font-size:34px; left:50%; top:44%; transform:translate(-50%,-50%); transition:all .42s cubic-bezier(.3,1.3,.5,1); z-index:3; filter:drop-shadow(0 4px 6px rgba(0,0,0,.5))}
+  .ball{position:absolute; font-size:26px; left:50%; bottom:5%; transform:translate(-50%,0); transition:all .42s cubic-bezier(.4,0,.6,1); z-index:2; filter:drop-shadow(0 5px 5px rgba(0,0,0,.5))}
+  .flash{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:40px; text-transform:uppercase; pointer-events:none; opacity:0; z-index:5}
+  .flash.show{animation:pop .9s ease}
+  .flash.goal{color:var(--grass)} .flash.save{color:var(--danger)}
+  @keyframes pop{0%{opacity:0;transform:scale(.6)}25%{opacity:1;transform:scale(1.08)}75%{opacity:1;transform:scale(1)}100%{opacity:0}}
+  .hint{text-align:center; color:var(--muted); font-size:13px; margin:8px 0 2px; min-height:18px}
+  .hint b{color:var(--grass)}
+  .bracket{display:flex; flex-direction:column; gap:10px; margin-top:6px}
+  .round-lbl{color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.08em; margin:6px 2px 0}
+  .match{display:flex; align-items:center; gap:8px; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:9px 12px}
+  .match .vs{color:var(--muted); font-weight:700; font-size:12px}
+  .match .side{display:flex; align-items:center; gap:7px; font-weight:800; font-size:14px}
+  .match.you-here{border-color:var(--grass); box-shadow:0 0 0 1px var(--grass) inset}
+  .teamsel{display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:6px}
+  .teamsel .t{display:flex; align-items:center; gap:8px; padding:12px; border:1px solid var(--line); border-radius:12px; background:var(--panel); cursor:pointer; font-weight:800; font-size:14px}
+  .teamsel .t:active{transform:scale(.98)}
+  .teamsel .t .fl{font-size:20px}
+  /* ---- uniform collectible sticker ---- */
+  .card{position:relative; border-radius:13px; overflow:hidden; background:linear-gradient(172deg,#193227,#0e2019); border:1px solid var(--line); box-shadow:0 6px 16px rgba(0,0,0,.35);}
+  .card .hd{display:flex; justify-content:space-between; align-items:center; padding:6px 9px; background:rgba(255,255,255,.05); font-size:11px; font-weight:800; color:var(--muted)}
+  .card .hd .num{font-variant-numeric:tabular-nums; letter-spacing:.03em}
+  .card .hd .fl{font-size:16px}
+  .card .port{font-size:44px; text-align:center; padding:8px 0 2px; line-height:1}
+  .card .bd{padding:2px 9px 10px}
+  .card .nm{font-weight:800; font-size:13px; line-height:1.05; text-wrap:balance; min-height:29px}
+  .card .meta{display:flex; justify-content:space-between; align-items:center; margin-top:3px}
+  .card .nat{color:var(--muted); font-size:10px}
+  .card .rt{color:var(--grass); font-weight:900; font-size:13px; font-variant-numeric:tabular-nums}
+  .card.locked{background:#0c1a14; border-style:dashed}
+  .card.locked .port{filter:grayscale(1); opacity:.3}
+  .card.locked .nm{color:var(--muted)}
+  .card.locked .rt{color:var(--muted)}
+  .card .cnt{position:absolute; top:5px; right:5px; font-size:10px; font-weight:800; color:#04170d; background:var(--grass); padding:1px 7px; border-radius:99px}
+  .card .dup{position:absolute; bottom:6px; right:7px; font-size:10px; font-weight:800; color:var(--muted)}
+  .packstage{display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin-top:14px}
+  .reveal{opacity:0; transform:translateY(14px) scale(.9); animation:reveal .5s ease forwards}
+  @keyframes reveal{to{opacity:1; transform:none}}
+  .natsec{margin-top:16px}
+  .natsec .h{display:flex; align-items:center; gap:8px; margin:0 2px 8px; font-weight:900}
+  .natsec .h .fl{font-size:20px}
+  .natsec .h .pg{margin-left:auto; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums}
+  .natsec .h .pg.done{color:var(--grass)}
+  .natsec.done .h .name::after{content:" ✓"; color:var(--grass)}
+  .cardrow{display:grid; grid-template-columns:repeat(4,1fr); gap:8px}
+  .filterbar{display:flex; gap:7px; margin:10px 0 2px; flex-wrap:wrap}
+  .chip{font-size:12px; font-weight:800; padding:6px 11px; border-radius:99px; border:1px solid var(--line); background:var(--panel); color:var(--muted); cursor:pointer}
+  .chip.on{background:var(--grass); color:#04170d; border-color:var(--grass)}
+  .center{text-align:center}
+  .toast{position:fixed; left:50%; bottom:22px; transform:translateX(-50%) translateY(20px); background:#0c2418; border:1px solid var(--grass); color:var(--text); padding:11px 16px; border-radius:12px; font-weight:800; box-shadow:var(--shadow); opacity:0; transition:.25s; z-index:60; pointer-events:none; max-width:88vw; text-align:center}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+  .foot{color:var(--muted); font-size:11px; text-align:center; margin-top:26px; line-height:1.5}
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important; transition-duration:.05ms!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">⚽ <span>TOR<b>JÄGER</b></span></div>
+    <div class="spacer"></div>
+    <div class="coins">🪙 <span id="coinBal">0</span></div>
+  </div>
+
+  <section class="screen active" id="s-home">
+    <h1 class="hero">Sammle das <span>ganze<br>WM-Album</span></h1>
+    <p class="sub">Gewinne WM & EM, verwandle Elfmeter, kassiere Coins und öffne Tüten voller Sammelkarten.</p>
+    <div class="stat-row">
+      <div class="stat"><div class="k">Album</div><div class="v"><span id="stCards">0</span>/<span id="stTotal">0</span></div></div>
+      <div class="stat"><div class="k">Siegesserie</div><div class="v" id="stStreak">0</div></div>
+      <div class="stat"><div class="k">Titel</div><div class="v" id="stTitles">0</div></div>
+    </div>
+    <div class="grid" style="margin-top:6px">
+      <button class="tile" data-go="penalty"><span class="glow"></span><div class="ic">🥅</div><div><div class="t">Elfmeter</div><div class="d">Schnelles Duell · Best of 5</div></div></button>
+      <button class="tile" data-go="packs"><span class="glow"></span><div class="ic">📦</div><div><div class="t">Tüte öffnen</div><div class="d">Coins gegen Karten</div></div></button>
+      <button class="tile" data-mode="WM" data-go="tourney"><span class="glow"></span><div class="ic">🏆</div><div><div class="t">WM</div><div class="d">K.-o. bis zum Titel</div></div></button>
+      <button class="tile" data-mode="EM" data-go="tourney"><span class="glow"></span><div class="ic">🌍</div><div><div class="t">EM</div><div class="d">Europas Beste</div></div></button>
+      <button class="tile wide" data-go="book"><div class="ic">📖</div><div><div class="t">WM-Album</div><div class="d">Deine Sammlung Land für Land</div></div><div class="spacer"></div><div style="font-size:22px">›</div></button>
+    </div>
+    <div class="foot">Fortschritt wird auf deinem Gerät gespeichert.<br>Alle Spieler sind frei erfunden. ⚽</div>
+  </section>
+
+  <section class="screen" id="s-penalty">
+    <div class="backrow"><button class="back" data-back>‹</button><h2 id="penTitle">Elfmeterschießen</h2></div>
+    <div class="arena">
+      <div class="scoreboard">
+        <div class="team you" id="pnYouName">Du</div>
+        <div class="sc you" id="pnYouSc">0</div>
+        <div style="color:var(--muted);font-weight:800">:</div>
+        <div class="sc" id="pnOppSc">0</div>
+        <div class="team" id="pnOppName">Gegner</div>
+      </div>
+      <div class="dots" id="pnDots"></div>
+      <div class="goalwrap">
+        <div class="goal"></div>
+        <div class="keeper" id="pnKeeper">🧤</div>
+        <div class="zones" id="pnZones">
+          <div class="zone" data-z="0"></div><div class="zone" data-z="1"></div><div class="zone" data-z="2"></div>
+          <div class="zone" data-z="3"></div><div class="zone" data-z="4"></div><div class="zone" data-z="5"></div>
+        </div>
+        <div class="turf"></div>
+        <div class="ball" id="pnBall">⚽</div>
+        <div class="flash" id="pnFlash"></div>
+      </div>
+      <div class="hint" id="pnHint">Tippe eine Ecke, um zu schießen.</div>
+    </div>
+    <div id="pnResult" class="center" style="margin-top:14px; display:none">
+      <div id="pnResultTxt" style="font-weight:900; font-size:22px; text-transform:uppercase; margin-bottom:10px"></div>
+      <button class="btn block" id="pnNext">Weiter</button>
+    </div>
+  </section>
+
+  <section class="screen" id="s-tourney">
+    <div class="backrow"><button class="back" data-back>‹</button><h2 id="tyTitle">Turnier</h2></div>
+    <div id="tyPick" style="display:none">
+      <p class="sub">Wähle dein Team – dann kämpfst du dich per Elfmeterschießen durchs K.-o.-Bracket bis zum Titel.</p>
+      <div class="teamsel" id="tyTeams"></div>
+    </div>
+    <div id="tyBoard" style="display:none">
+      <div class="stat-row">
+        <div class="stat"><div class="k">Dein Team</div><div class="v" id="tyMyTeam" style="font-size:16px">–</div></div>
+        <div class="stat"><div class="k">Runde</div><div class="v" id="tyRound" style="font-size:16px">–</div></div>
+      </div>
+      <div class="bracket" id="tyBracket"></div>
+      <button class="btn gold block" id="tyPlay" style="margin-top:14px">Nächstes Spiel ▶</button>
+    </div>
+  </section>
+
+  <section class="screen" id="s-packs">
+    <div class="backrow"><button class="back" data-back>‹</button><h2>Kartentüte</h2></div>
+    <div class="arena center">
+      <div style="font-size:60px; margin:6px 0">📦</div>
+      <div style="font-weight:900; font-size:20px; text-transform:uppercase">Sammelkarten-Tüte</div>
+      <div class="sub" style="margin:6px 0 14px">3 zufällige Karten fürs Album</div>
+      <button class="btn gold block" id="buyPack">Tüte öffnen — 120 🪙</button>
+      <div class="hint" id="packHint"></div>
+    </div>
+    <div class="packstage" id="packStage"></div>
+  </section>
+
+  <section class="screen" id="s-book">
+    <div class="backrow"><button class="back" data-back>‹</button><h2>WM-Album</h2></div>
+    <div class="stat-row">
+      <div class="stat"><div class="k">Gesammelt</div><div class="v"><span id="bkOwned">0</span>/<span id="bkTotal">0</span></div></div>
+      <div class="stat"><div class="k">Teams komplett</div><div class="v"><span id="bkNat">0</span>/<span id="bkNatT">0</span></div></div>
+    </div>
+    <div class="filterbar" id="bkFilter">
+      <button class="chip on" data-f="all">Alle Länder</button>
+      <button class="chip" data-f="owned">Nur besessene</button>
+      <button class="chip" data-f="missing">Nur fehlende</button>
+    </div>
+    <div id="bookAlbum"></div>
+  </section>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+  const KEY="torjaeger_v2";
+
+  function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+  const NATIONS=[
+    {n:"Deutschland",f:"🇩🇪",eu:1},{n:"Frankreich",f:"🇫🇷",eu:1},{n:"Spanien",f:"🇪🇸",eu:1},
+    {n:"England",f:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",eu:1},{n:"Italien",f:"🇮🇹",eu:1},{n:"Portugal",f:"🇵🇹",eu:1},
+    {n:"Niederlande",f:"🇳🇱",eu:1},{n:"Belgien",f:"🇧🇪",eu:1},{n:"Kroatien",f:"🇭🇷",eu:1},
+    {n:"Brasilien",f:"🇧🇷",eu:0},{n:"Argentinien",f:"🇦🇷",eu:0},{n:"Uruguay",f:"🇺🇾",eu:0},
+    {n:"Japan",f:"🇯🇵",eu:0},{n:"Marokko",f:"🇲🇦",eu:0},{n:"USA",f:"🇺🇸",eu:0},{n:"Senegal",f:"🇸🇳",eu:0}
+  ];
+  const FIRST=["Leo","Max","Nino","Kai","Enzo","Luca","Rafa","Yann","Milo","Theo","Nico","Aron","Jos","Deniz","Ferro","Bax","Vito","Sami","Elis","Odin","Ravi","Toni","Malo","Dario","Emre"];
+  const LAST=["Vogt","Marra","Sting","Delacroix","Bianchi","Okafor","Halden","Reyes","Novak","Torstad","Kandé","Serra","Braun","Falk","Duarte","Voss","Renn","Sölvberg","Adeyi","Costas","Bahar","Lindqvist","Moreno","Wilder","Kovi"];
+  const POS=["TW","ABW","MF","ST"];
+  const PORT={TW:"🧤",ABW:"🛡️",MF:"🎯",ST:"⚽"};
+  function buildRoster(){
+    const rng=mulberry32(20260722), r=[]; const per=5; // 5 per nation = 80
+    NATIONS.forEach(nat=>{
+      for(let k=0;k<per;k++){
+        const pos = k===0?"TW":POS[1+Math.floor(rng()*3)];
+        const rating=70+Math.floor(rng()*29);
+        const nm=FIRST[Math.floor(rng()*FIRST.length)]+" "+LAST[Math.floor(rng()*LAST.length)];
+        r.push({id:r.length,num:r.length+1,nm,pos,rating,nat:nat.n,fl:nat.f,eu:nat.eu});
+      }
+    });
+    return r;
+  }
+  const ROSTER=buildRoster();
+  const NATLIST=NATIONS.map(n=>n.n);
+  const natCards=name=>ROSTER.filter(c=>c.nat===name);
+
+  let S=load();
+  function load(){try{const j=JSON.parse(localStorage.getItem(KEY)); if(j&&j.v===2) return j;}catch(e){} return {v:2, coins:180, coll:{}, streak:0, titles:0, doneNats:{}};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+  const owned=id=>S.coll[id]||0;
+  function give(id){S.coll[id]=(S.coll[id]||0)+1;}
+  function addCoins(n){S.coins=Math.max(0,S.coins+n); renderCoins();}
+  const ownedCount=()=>Object.values(S.coll).filter(x=>x>0).length;
+  function natComplete(name){return natCards(name).every(c=>owned(c.id))}
+  function checkNatBonus(){
+    let msg=null;
+    NATLIST.forEach(name=>{ if(natComplete(name) && !S.doneNats[name]){ S.doneNats[name]=1; addCoins(100); msg=name; } });
+    return msg;
+  }
+  const natDoneCount=()=>NATLIST.filter(natComplete).length;
+
+  function renderCoins(){$("#coinBal").textContent=S.coins;}
+  function renderHome(){
+    $("#stCards").textContent=ownedCount(); $("#stTotal").textContent=ROSTER.length;
+    $("#stStreak").textContent=S.streak; $("#stTitles").textContent=S.titles;
+  }
+  function go(id){$$(".screen").forEach(s=>s.classList.remove("active")); $("#s-"+id).classList.add("active"); window.scrollTo(0,0);}
+  $$("[data-go]").forEach(b=>b.addEventListener("click",()=>{
+    const g=b.dataset.go;
+    if(g==="penalty") startFriendly();
+    else if(g==="tourney") openTourney(b.dataset.mode);
+    else if(g==="packs"){go("packs"); $("#packStage").innerHTML=""; $("#packHint").textContent="";}
+    else if(g==="book"){renderBook("all"); go("book");}
+  }));
+  $$("[data-back]").forEach(b=>b.addEventListener("click",()=>{renderHome(); go("home");}));
+  function toast(msg){const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),2100);}
+
+  function cardHTML(c,extra=""){
+    return `<div class="card ${extra}">
+      <div class="hd"><span class="num">Nr. ${String(c.num).padStart(2,"0")}</span><span class="fl">${c.fl}</span></div>
+      <div class="port">${PORT[c.pos]||"👤"}</div>
+      <div class="bd">
+        <div class="nm">${c.nm}</div>
+        <div class="meta"><span class="nat">${c.pos} · ${c.nat}</span><span class="rt">${c.rating}</span></div>
+      </div>
+    </div>`;
+  }
+  function lockedHTML(c){
+    return `<div class="card locked">
+      <div class="hd"><span class="num">Nr. ${String(c.num).padStart(2,"0")}</span><span class="fl">${c.fl}</span></div>
+      <div class="port">👤</div>
+      <div class="bd"><div class="nm">???</div><div class="meta"><span class="nat">${c.nat}</span><span class="rt">—</span></div></div>
+    </div>`;
+  }
+
+  /* PENALTY */
+  const ZX=[18,50,82], ZY=[32,64];
+  const zoneCoord=z=>({x:ZX[z%3], y:ZY[z<3?0:1]});
+  let PEN=null;
+  function newDots(n){const d=$("#pnDots"); d.innerHTML=""; for(let i=0;i<n;i++){const s=document.createElement("div"); s.className="dot"; d.appendChild(s);}}
+  function setDot(i,ok){const dots=$("#pnDots").children; if(dots[i]) dots[i].className="dot "+(ok?"g":"m");}
+  function addDots(n){const d=$("#pnDots"); for(let i=0;i<n;i++){const s=document.createElement("div"); s.className="dot"; d.appendChild(s);}}
+  function startShootout(opp,opts){
+    PEN={opp,you:0,oppSc:0,round:0,turn:"you",sudden:false,base:opts.rounds||5,done:false,busy:false,opts};
+    $("#penTitle").textContent=opts.title||"Elfmeterschießen";
+    $("#pnYouName").textContent=opts.youName||"Du"; $("#pnOppName").textContent=opp;
+    $("#pnYouSc").textContent="0"; $("#pnOppSc").textContent="0";
+    newDots(PEN.base*2); $("#pnResult").style.display="none"; resetKB(); go("penalty"); nextTurn();
+  }
+  function resetKB(){const k=$("#pnKeeper"),b=$("#pnBall"); k.style.transition="none"; b.style.transition="none"; k.style.left="50%"; k.style.top="44%"; k.style.transform="translate(-50%,-50%)"; b.style.left="50%"; b.style.bottom="5%"; b.style.top="auto"; b.style.transform="translate(-50%,0)"; void k.offsetWidth; k.style.transition=""; b.style.transition="";}
+  function setZones(on){$$("#pnZones .zone").forEach(z=>z.classList.toggle("pick",on));}
+  function nextTurn(){
+    if(PEN.done) return; resetKB();
+    const isYou=PEN.turn==="you"; setZones(isYou);
+    if(isYou){$("#pnHint").innerHTML=PEN.sudden?"<b>Sudden Death!</b> Tippe eine Ecke.":"Dein Schuss – tippe eine Ecke.";}
+    else{$("#pnHint").innerHTML=`<b>${PEN.opp}</b> schießt…`; setTimeout(()=>shoot(Math.floor(Math.random()*6),false),850);}
+  }
+  $$("#pnZones .zone").forEach(z=>z.addEventListener("click",()=>{ if(!PEN||PEN.turn!=="you"||PEN.busy) return; shoot(parseInt(z.dataset.z,10),true); }));
+  function pickKeeper(zone){ if(Math.random()<0.62) return Math.floor(Math.random()*6); return Math.random()<0.5?zone:Math.floor(Math.random()*6); }
+  function shoot(zone,isYou){
+    if(PEN.busy) return; PEN.busy=true; setZones(false);
+    const kz=pickKeeper(zone), tc=zoneCoord(zone), kc=zoneCoord(kz);
+    const b=$("#pnBall"),k=$("#pnKeeper"),fl=$("#pnFlash");
+    k.style.left=kc.x+"%"; k.style.top=kc.y+"%"; k.style.transform="translate(-50%,-50%) rotate("+(kz%3===0?-25:kz%3===2?25:0)+"deg)";
+    b.style.transition="all .45s cubic-bezier(.35,0,.5,1)"; b.style.bottom="auto"; b.style.left=tc.x+"%"; b.style.top=tc.y+"%"; b.style.transform="translate(-50%,-50%) scale(.72)";
+    const scored=kz!==zone;
+    setTimeout(()=>{
+      fl.className="flash show "+(scored?"goal":"save"); fl.textContent=scored?"TOR!":"GEHALTEN!";
+      const idx=PEN.round*2+(isYou?0:1);
+      if(isYou){if(scored)PEN.you++; $("#pnYouSc").textContent=PEN.you;} else {if(scored)PEN.oppSc++; $("#pnOppSc").textContent=PEN.oppSc;}
+      setDot(idx,scored);
+      setTimeout(()=>{fl.className="flash"; advance(isYou); PEN.busy=false;},950);
+    },470);
+  }
+  function advance(wasYou){
+    if(wasYou) PEN.turn="opp"; else { PEN.turn="you"; PEN.round++; }
+    const r=PEN.round, base=PEN.base;
+    if(!PEN.sudden){
+      const shotsYou=PEN.turn==="opp"?r+1:r, shotsOpp=r;
+      const remYou=base-shotsYou, remOpp=base-shotsOpp;
+      if(PEN.you>PEN.oppSc+remOpp) return finish(true);
+      if(PEN.oppSc>PEN.you+remYou) return finish(false);
+      if(r>=base && PEN.turn==="you"){ if(PEN.you!==PEN.oppSc) return finish(PEN.you>PEN.oppSc); PEN.sudden=true; addDots(2); }
+    } else if(!wasYou){ if(PEN.you!==PEN.oppSc) return finish(PEN.you>PEN.oppSc); addDots(2); }
+    nextTurn();
+  }
+  function finish(win){
+    PEN.done=true; setZones(false); $("#pnHint").textContent=""; $("#pnResult").style.display="block";
+    const t=$("#pnResultTxt");
+    if(win){t.style.color="var(--grass)"; t.textContent="🎉 Gewonnen "+PEN.you+":"+PEN.oppSc;}
+    else{t.style.color="var(--danger)"; t.textContent="😖 Verloren "+PEN.you+":"+PEN.oppSc;}
+    $("#pnNext").onclick=()=>{ if(PEN.opts.onEnd) PEN.opts.onEnd(win); };
+  }
+  function startFriendly(){
+    const opp=NATIONS[Math.floor(Math.random()*NATIONS.length)];
+    startShootout(opp.n,{rounds:5,title:"Elfmeter-Duell",onEnd(win){
+      if(win){addCoins(45); S.streak++; toast("🎉 +45 🪙 · Serie: "+S.streak);} else {addCoins(8); S.streak=0; toast("+8 🪙 Trostpreis");}
+      save(); renderHome(); go("home");
+    }});
+  }
+
+  /* TOURNEY */
+  let TY=null;
+  const ROUND_NAMES=["Viertelfinale","Halbfinale","Finale"];
+  function openTourney(mode){
+    $("#tyTitle").textContent=mode==="WM"?"Weltmeisterschaft":"Europameisterschaft";
+    const pool=mode==="EM"?NATIONS.filter(n=>n.eu):NATIONS.slice();
+    TY={mode,pool}; $("#tyPick").style.display="block"; $("#tyBoard").style.display="none";
+    const wrap=$("#tyTeams"); wrap.innerHTML="";
+    shuffle(pool).slice(0,8).forEach(t=>{const el=document.createElement("button"); el.className="t"; el.innerHTML=`<span class="fl">${t.f}</span>${t.n}`; el.onclick=()=>pickTeam(t); wrap.appendChild(el);});
+    go("tourney");
+  }
+  function pickTeam(t){
+    let field=shuffle(TY.pool).filter(x=>x.n!==t.n).slice(0,7); field.push(t); field=shuffle(field);
+    TY.myTeam=t; TY.field=field; TY.round=0; TY.alive=field.map(x=>x.n);
+    $("#tyMyTeam").innerHTML=t.f+" "+t.n; $("#tyPick").style.display="none"; $("#tyBoard").style.display="block"; renderBracket();
+  }
+  function renderBracket(){
+    $("#tyRound").textContent=ROUND_NAMES[TY.round]||"–";
+    const bc=$("#tyBracket"); bc.innerHTML="";
+    const alive=TY.alive.map(n=>TY.field.find(f=>f.n===n));
+    const lbl=document.createElement("div"); lbl.className="round-lbl"; lbl.textContent=ROUND_NAMES[TY.round]; bc.appendChild(lbl);
+    for(let i=0;i<alive.length;i+=2){
+      const a=alive[i], b=alive[i+1], m=document.createElement("div"); m.className="match";
+      if(a.n===TY.myTeam.n||b.n===TY.myTeam.n) m.classList.add("you-here");
+      m.innerHTML=`<span class="side">${a.f} ${a.n}</span><span class="vs">vs</span><span class="side" style="justify-content:flex-end;flex:1">${b.f} ${b.n}</span>`;
+      bc.appendChild(m);
+    }
+    const btn=$("#tyPlay"); btn.style.display="block"; btn.textContent="Nächstes Spiel ▶"; btn.disabled=false;
+  }
+  $("#tyPlay").addEventListener("click",()=>{
+    const alive=TY.alive.slice(), myIdx=alive.indexOf(TY.myTeam.n), pairIdx=myIdx%2===0?myIdx+1:myIdx-1;
+    const opp=TY.field.find(f=>f.n===alive[pairIdx]);
+    startShootout(opp.n,{rounds:5,title:ROUND_NAMES[TY.round],youName:TY.myTeam.n,onEnd(win){tourneyResult(win,opp);}});
+  });
+  function tourneyResult(win){
+    if(!win){addCoins(20); S.streak=0; save(); toast("Ausgeschieden im "+ROUND_NAMES[TY.round]+". +20 🪙"); renderHome(); go("home"); return;}
+    addCoins(60); S.streak++;
+    const alive=TY.alive.slice(), winners=[];
+    for(let i=0;i<alive.length;i+=2){const a=alive[i],b=alive[i+1]; if(a===TY.myTeam.n){winners.push(a);continue;} if(b===TY.myTeam.n){winners.push(b);continue;} winners.push(Math.random()<0.5?a:b);}
+    TY.alive=winners; TY.round++;
+    if(TY.alive.length===1){
+      S.titles++; const bonus=350; addCoins(bonus);
+      const missing=ROSTER.filter(c=>!owned(c.id)); const card=(missing.length?missing:ROSTER)[Math.floor(Math.random()*(missing.length?missing.length:ROSTER.length))];
+      give(card.id); const nb=checkNatBonus(); save();
+      $("#pnResult").style.display="none"; go("tourney"); $("#tyBoard").style.display="block"; $("#tyPick").style.display="none";
+      $("#tyBracket").innerHTML=`<div class="center" style="padding:12px">
+        <div style="font-size:56px">🏆</div>
+        <div style="font-weight:900;font-size:22px;text-transform:uppercase;margin:6px 0">${TY.mode}-Titel!</div>
+        <div class="sub">${TY.myTeam.f} ${TY.myTeam.n} ist ${TY.mode==="WM"?"Weltmeister":"Europameister"}!</div>
+        <div style="margin:10px 0 4px;font-weight:800;color:var(--gold)">+${bonus} 🪙 · Bonuskarte fürs Album:</div>
+        <div style="max-width:150px;margin:8px auto">${cardHTML(card)}</div></div>`;
+      $("#tyRound").textContent="Champion"; $("#tyPlay").style.display="none";
+      toast("🏆 "+TY.mode+"-Titel! +"+bonus+" 🪙"); renderCoins(); return;
+    }
+    save(); toast("Weiter! +60 🪙 · "+ROUND_NAMES[TY.round]); go("tourney"); renderBracket();
+  }
+
+  /* PACKS */
+  const drawCard=()=>ROSTER[Math.floor(Math.random()*ROSTER.length)];
+  $("#buyPack").addEventListener("click",()=>{
+    if(S.coins<120){toast("Nicht genug Coins – gewinne Spiele!"); return;}
+    addCoins(-120);
+    const stage=$("#packStage"); stage.innerHTML=""; $("#packHint").textContent="";
+    let newCount=0;
+    const drawn=[drawCard(),drawCard(),drawCard()];
+    drawn.forEach((c,i)=>{
+      const isNew=owned(c.id)===0; give(c.id); if(isNew) newCount++;
+      const div=document.createElement("div"); div.innerHTML=cardHTML(c,"reveal");
+      const el=div.firstElementChild; el.style.animationDelay=(i*0.28)+"s";
+      if(isNew){const n=document.createElement("span"); n.className="cnt"; n.textContent="NEU"; el.appendChild(n);}
+      else {const d=document.createElement("span"); d.className="dup"; d.textContent="hast du schon"; el.appendChild(d);}
+      stage.appendChild(el);
+    });
+    const nb=checkNatBonus(); save();
+    setTimeout(()=>{
+      let msg = newCount? `⭐ ${newCount} neue Karte${newCount>1?"n":""} fürs Album!` : "Alles Doppelte – Pech gehabt!";
+      if(nb) msg=`🎉 ${nb} komplett! +100 🪙 Bonus`;
+      $("#packHint").innerHTML=msg;
+    },1000);
+    renderHome();
+  });
+
+  /* BOOK — album by nation */
+  function renderBook(filter){
+    $("#bkOwned").textContent=ownedCount(); $("#bkTotal").textContent=ROSTER.length;
+    $("#bkNat").textContent=natDoneCount(); $("#bkNatT").textContent=NATLIST.length;
+    const wrap=$("#bookAlbum"); wrap.innerHTML="";
+    NATIONS.forEach(nat=>{
+      const cards=natCards(nat.n);
+      const have=cards.filter(c=>owned(c.id)).length;
+      let show=cards;
+      if(filter==="owned") show=cards.filter(c=>owned(c.id));
+      else if(filter==="missing") show=cards.filter(c=>!owned(c.id));
+      if(!show.length) return;
+      const done=have===cards.length;
+      const sec=document.createElement("div"); sec.className="natsec"+(done?" done":"");
+      sec.innerHTML=`<div class="h"><span class="fl">${nat.f}</span><span class="name">${nat.n}</span><span class="pg ${done?"done":""}">${have}/${cards.length}</span></div>`;
+      const row=document.createElement("div"); row.className="cardrow";
+      show.forEach(c=>{
+        const has=owned(c.id); const div=document.createElement("div");
+        div.innerHTML = has? cardHTML(c) : lockedHTML(c);
+        const el=div.firstElementChild;
+        if(has>1){const d=document.createElement("span"); d.className="dup"; d.textContent="×"+has; el.appendChild(d);}
+        row.appendChild(el);
+      });
+      sec.appendChild(row); wrap.appendChild(sec);
+    });
+    if(!wrap.children.length) wrap.innerHTML='<div class="sub center" style="padding:24px">Nichts hier. Öffne Tüten! 📦</div>';
+  }
+  $$("#bkFilter .chip").forEach(ch=>ch.addEventListener("click",()=>{$$("#bkFilter .chip").forEach(c=>c.classList.remove("on")); ch.classList.add("on"); renderBook(ch.dataset.f);}));
+
+  function shuffle(a){a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  renderCoins(); renderHome();
+})();
+</script>
+</body>
+</html>
