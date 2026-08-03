@@ -85,6 +85,19 @@
   .match .side{display:flex; align-items:center; gap:6px; font-weight:800}
   .match.you-here{border-color:var(--grass); box-shadow:0 0 0 1px var(--grass) inset}
   .match.done{opacity:.6}
+  .grow{display:flex; align-items:center; gap:8px; padding:7px 10px; border:1px solid var(--line); border-radius:10px; margin-top:5px; background:var(--panel); font-size:13px; font-weight:700}
+  .grow.me{border-color:var(--grass); box-shadow:0 0 0 1px var(--grass) inset}
+  .grow.q .pos{color:var(--grass)}
+  .grow .pos{width:15px; color:var(--muted); font-weight:900; text-align:center}
+  .grow .fl{font-size:17px}
+  .grow .nm{flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .grow .pt{color:var(--muted); font-size:11px; font-weight:600}
+  .grow .pts{font-weight:900; color:var(--gold); min-width:20px; text-align:right}
+  .othergroups{margin-top:12px}
+  .ogrp{display:flex; align-items:center; gap:5px; padding:5px 4px; font-size:16px; border-bottom:1px solid rgba(255,255,255,.05)}
+  .ogrp b{width:16px; color:var(--muted); font-size:12px}
+  .ogrp .qs{outline:2px solid var(--grass); outline-offset:1px; border-radius:3px}
+  .ogrp .mes{filter:drop-shadow(0 0 4px var(--grass))}
   .teamsel{display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:6px}
   .teamsel .t{display:flex; align-items:center; gap:8px; padding:12px; border:1px solid var(--line); border-radius:12px; background:var(--panel); cursor:pointer; font-weight:800; font-size:14px}
   .teamsel .t:active{transform:scale(.98)}
@@ -161,7 +174,7 @@
       <div class="stat"><div class="k">Titel</div><div class="v" id="stTitles">0</div></div>
     </div>
     <div class="grid" style="margin-top:6px">
-      <button class="tile" data-go="match"><span class="glow"></span><div class="ic">🎮</div><div><div class="t">Match</div><div class="d">Echtes Spiel · du steuerst</div></div></button>
+      <button class="tile" data-go="penalty"><span class="glow"></span><div class="ic">🥅</div><div><div class="t">Elfmeter</div><div class="d">Schnelles Duell · Best of 5</div></div></button>
       <button class="tile" data-go="packs"><span class="glow"></span><div class="ic">📦</div><div><div class="t">Tüte öffnen</div><div class="d">Coins gegen Karten</div></div></button>
       <button class="tile" data-mode="WM" data-go="tourney"><span class="glow"></span><div class="ic">🏆</div><div><div class="t">WM</div><div class="d">Jedes Spiel selbst</div></div></button>
       <button class="tile" data-mode="EM" data-go="tourney"><span class="glow"></span><div class="ic">🌍</div><div><div class="t">EM</div><div class="d">Europas Beste</div></div></button>
@@ -233,7 +246,7 @@
   <section class="screen" id="s-tourney">
     <div class="backrow"><button class="back" data-back>‹</button><h2 id="tyTitle">Turnier</h2></div>
     <div id="tyPick" style="display:none">
-      <p class="sub">Wähle dein Team. Du spielst <b>jedes</b> Spiel im Turnier selbst – als echtes Match mit Spieluhr. Bei Unentschieden gibt's Elfmeterschießen.</p>
+      <p class="sub">Wähle dein Team. Erst <b>Gruppenphase</b> (3 Spiele) – die Top 2 jeder Gruppe kommen weiter. Danach <b>K.o.-Runde</b> bis zum Finale. Deine Spiele steuerst du selbst, die anderen werden simuliert.</p>
       <div class="teamsel" id="tyTeams"></div>
     </div>
     <div id="tyBoard" style="display:none">
@@ -360,7 +373,7 @@
   function go(id){$$(".screen").forEach(s=>s.classList.remove("active")); $("#s-"+id).classList.add("active"); window.scrollTo(0,0);}
   $$("[data-go]").forEach(b=>b.addEventListener("click",()=>{
     const g=b.dataset.go;
-    if(g==="match") startFriendly();
+    if(g==="penalty") startPenalty();
     else if(g==="tourney") openTourney(b.dataset.mode);
     else if(g==="packs"){go("packs"); $("#packStage").innerHTML=""; $("#packHint").textContent="";}
     else if(g==="book"){renderBook("all"); go("book");}
@@ -456,6 +469,13 @@
       if(win){addCoins(45); S.streak++; toast("🎉 Sieg! +45 🪙 · Serie: "+S.streak);}
       else if(draw){addCoins(15); toast("🤝 Unentschieden · +15 🪙");}
       else {addCoins(8); S.streak=0; toast("+8 🪙");}
+      save(); renderHome(); go("home");
+    }});
+  }
+  function startPenalty(){
+    const opp=NATIONS[Math.floor(Math.random()*NATIONS.length)];
+    startShootout(opp.n,{rounds:5,title:"Elfmeterschießen",youName:"Du",onEnd(win){
+      if(win){addCoins(45); S.streak++; toast("🎉 +45 🪙 · Serie: "+S.streak);} else {addCoins(8); S.streak=0; toast("+8 🪙 Trostpreis");}
       save(); renderHome(); go("home");
     }});
   }
@@ -674,24 +694,72 @@
   function startMatch(you,opp,opts){ PITCH.start(you,opp,opts); }
   function simMatch(a,b){ const sa=strengthOf(a.n)+Math.random()*9, sb=strengthOf(b.n)+Math.random()*9; return sa>=sb?a:b; }
 
-  /* ---- TOURNAMENT: play EVERY match ---- */
+  /* ---- TOURNAMENT: group stage + knockout ---- */
   let TY=null;
   const ROUND_NAMES=["Achtelfinale","Viertelfinale","Halbfinale","Finale"];
+  const GLET=g=>String.fromCharCode(65+g);
+  function simScore(a,b){ const d=(strengthOf(a.n)-strengthOf(b.n))/8; const ea=Math.max(0.25,1.3+d), eb=Math.max(0.25,1.3-d); const g=e=>{let n=0,p=Math.exp(-e),f=Math.random(),c=p; while(f>c&&n<7){n++;p*=e/n;c+=p;} return n;}; return {sa:g(ea),sb:g(eb)}; }
+  function makeGroup(teams){ const pairs=[[0,1],[2,3],[0,2],[1,3],[0,3],[1,2]];
+    return {teams, fixtures:pairs.map(([ai,bi])=>({ai,bi,sa:0,sb:0,played:false,mine:false})), table:teams.map(t=>({t,pl:0,w:0,d:0,l:0,gf:0,ga:0,pts:0}))}; }
+  function applyFix(gr,fx){ const A=gr.table[fx.ai],B=gr.table[fx.bi]; A.pl++;B.pl++; A.gf+=fx.sa;A.ga+=fx.sb; B.gf+=fx.sb;B.ga+=fx.sa;
+    if(fx.sa>fx.sb){A.w++;B.l++;A.pts+=3;} else if(fx.sa<fx.sb){B.w++;A.l++;B.pts+=3;} else {A.d++;B.d++;A.pts++;B.pts++;} }
+  function tableSorted(gr){ return gr.table.map((r,i)=>({r,i})).sort((x,y)=> y.r.pts-x.r.pts || (y.r.gf-y.r.ga)-(x.r.gf-x.r.ga) || y.r.gf-x.r.gf || x.i-y.i).map(o=>o.r); }
+
   function openTourney(mode){
     $("#tyTitle").textContent=mode==="WM"?"Weltmeisterschaft":"Europameisterschaft";
     const pool=(mode==="EM"?NATIONS.filter(n=>n.eu):NATIONS.slice());
-    TY={mode,pool,size:8}; $("#tyPick").style.display="block"; $("#tyBoard").style.display="none";
+    TY={mode,pool,nGroups:mode==="EM"?4:8}; $("#tyPick").style.display="block"; $("#tyBoard").style.display="none";
     const wrap=$("#tyTeams"); wrap.innerHTML="";
     shuffle(pool).forEach(t=>{const el=document.createElement("button"); el.className="t"; el.innerHTML=`<span class="fl">${t.f}</span>${t.n}`; el.onclick=()=>pickTeam(t); wrap.appendChild(el);});
     go("tourney");
   }
   function pickTeam(t){
-    let field=shuffle(TY.pool).filter(x=>x.n!==t.n).slice(0,TY.size-1); field.push(t); field=shuffle(field);
-    TY.myTeam=t; TY.alive=field; TY.round=0;
-    // starting round index so that final is last (size 8 -> start at Viertelfinale index 1)
-    TY.rIndex = ROUND_NAMES.length - Math.log2(TY.size); // 4 - 3 = 1
+    const nG=Math.max(2,Math.min(TY.nGroups,Math.floor(TY.pool.length/4))); TY.nGroups=nG;
+    const others=shuffle(TY.pool.filter(x=>x.n!==t.n)).slice(0,nG*4-1);
+    const field=shuffle([t,...others]);
+    const groups=[]; for(let g=0;g<nG;g++) groups.push(makeGroup(field.slice(g*4,g*4+4)));
+    const myG=groups.findIndex(gr=>gr.teams.some(x=>x.n===t.n));
+    TY.myTeam=t; TY.groups=groups; TY.myGroup=myG; TY.phase="groups";
+    groups.forEach((gr,gi)=>gr.fixtures.forEach(fx=>{ const a=gr.teams[fx.ai], b=gr.teams[fx.bi]; const involvesMe=(gi===myG)&&(a.n===t.n||b.n===t.n);
+      if(involvesMe){ fx.mine=true; } else { const s=simScore(a,b); fx.sa=s.sa; fx.sb=s.sb; fx.played=true; applyFix(gr,fx); } }));
+    TY.myFix=groups[myG].fixtures.filter(fx=>fx.mine); TY.myFixI=0;
     $("#tyMyTeam").innerHTML=t.f+" "+t.n; $("#tyPick").style.display="none"; $("#tyBoard").style.display="block";
-    buildQueue(); renderBracket();
+    renderGroups();
+  }
+  function renderGroups(){
+    $("#tyRound").textContent="Gruppenphase"; const bc=$("#tyBracket"); bc.innerHTML="";
+    const g=TY.groups[TY.myGroup], sorted=tableSorted(g);
+    const tbl=document.createElement("div"); tbl.innerHTML=`<div class="round-lbl">Deine Gruppe ${GLET(TY.myGroup)}</div>`+
+      sorted.map((r,i)=>`<div class="grow ${r.t.n===TY.myTeam.n?'me':''} ${i<2?'q':''}"><span class="pos">${i+1}</span><span class="fl">${r.t.f}</span><span class="nm">${r.t.n}</span><span class="pt">${r.pl} Sp · ${r.gf}:${r.ga}</span><span class="pts">${r.pts}</span></div>`).join("");
+    bc.appendChild(tbl);
+    const fl=document.createElement("div"); fl.style.marginTop="10px"; fl.innerHTML=`<div class="round-lbl">Deine 3 Gruppenspiele</div>`;
+    TY.myFix.forEach((fx,i)=>{ const a=g.teams[fx.ai], b=g.teams[fx.bi], meA=a.n===TY.myTeam.n, me=meA?a:b, opp=meA?b:a;
+      const el=document.createElement("div"); el.className="match you-here"+(fx.played?" done":"");
+      const res=fx.played?` ${meA?fx.sa:fx.sb}:${meA?fx.sb:fx.sa} `:(i===TY.myFixI?" als Nächstes":"");
+      el.innerHTML=`<span class="side">${me.f} ${me.n}</span><span class="vs">${fx.played?res:'vs'}</span><span class="side" style="justify-content:flex-end;flex:1">${opp.n} ${opp.f}</span>`; fl.appendChild(el); });
+    bc.appendChild(fl);
+    const og=document.createElement("div"); og.className="othergroups"; og.innerHTML=`<div class="round-lbl">Alle Gruppen (Top 2 kommen weiter)</div>`;
+    TY.groups.forEach((gr,gi)=>{ const s=tableSorted(gr); og.innerHTML+=`<div class="ogrp"><b>${GLET(gi)}</b>`+s.map((r,i)=>`<span class="${i<2?'qs':''} ${r.t.n===TY.myTeam.n?'mes':''}">${r.t.f}</span>`).join("")+`</div>`; });
+    bc.appendChild(og);
+    const btn=$("#tyPlay"); btn.style.display="block"; btn.disabled=false;
+    if(TY.myFixI<TY.myFix.length){ const fx=TY.myFix[TY.myFixI], a=g.teams[fx.ai], b=g.teams[fx.bi], opp=a.n===TY.myTeam.n?b:a; btn.textContent="⚽ Gruppenspiel "+(TY.myFixI+1)+"/3: "+opp.n; }
+    else btn.textContent="Weiter zur K.o.-Runde ▶";
+  }
+  function handleGroupPlay(){
+    const g=TY.groups[TY.myGroup];
+    if(TY.myFixI>=TY.myFix.length){ startKO(); return; }
+    const fx=TY.myFix[TY.myFixI], a=g.teams[fx.ai], b=g.teams[fx.bi], meA=a.n===TY.myTeam.n, me=meA?a:b, opp=meA?b:a;
+    startMatch(me,opp,{ title:"Gruppenphase", tag:"GRUPPE "+GLET(TY.myGroup)+" · Spiel "+(TY.myFixI+1)+"/3", nextLabel:"Weiter", knockout:false,
+      onEnd(win){ const r=MATCHRESULT; fx.sa=meA?r.ys:r.os; fx.sb=meA?r.os:r.ys; fx.played=true; applyFix(g,fx); const draw=r.ys===r.os;
+        if(win){addCoins(30); S.streak++; toast("Sieg! +30 🪙");} else if(draw){addCoins(12); toast("Remis · +12 🪙");} else {addCoins(6); S.streak=0; toast("Niederlage · +6 🪙");}
+        TY.myFixI++; save(); go("tourney"); renderGroups(); } });
+  }
+  function startKO(){
+    const winners=[],runners=[]; TY.groups.forEach(gr=>{ const s=tableSorted(gr); winners.push(s[0].t); runners.push(s[1].t); });
+    const nG=TY.nGroups, ko=[]; for(let i=0;i<nG;i++){ ko.push(winners[i]); ko.push(runners[(i+1)%nG]); }
+    TY.phase="ko"; TY.alive=ko; TY.round=0; TY.rIndex=ROUND_NAMES.length-Math.log2(ko.length);
+    if(!ko.some(t=>t.n===TY.myTeam.n)){ addCoins(25); save(); toast("In der Gruppe ausgeschieden. +25 🪙"); renderHome(); go("home"); return; }
+    buildQueue(); renderBracket(); toast("Weiter! "+roundName());
   }
   function roundName(){ return ROUND_NAMES[TY.rIndex+TY.round] || "Finale"; }
   function buildQueue(){
@@ -709,17 +777,18 @@
     const lbl=document.createElement("div"); lbl.className="round-lbl"; lbl.textContent=roundName()+" · "+TY.queue.length+" Spiele"; bc.appendChild(lbl);
     TY.queue.forEach((m,i)=>{
       const el=document.createElement("div"); el.className="match"+(m.mine?" you-here":"")+(m.winner?" done":"");
-      const res=m.winner?` — ${m.winner.f} ✓`:(i===TY.qi?' — als Nächstes':'');
-      el.innerHTML=`<span class="side">${m.a.f} ${m.a.n}</span><span class="vs">vs</span><span class="side" style="justify-content:flex-end;flex:1">${m.b.n} ${m.b.f}</span>`;
+      el.innerHTML=`<span class="side">${m.a.f} ${m.a.n}</span><span class="vs">${i===TY.qi&&!m.winner?'als Nächstes':'vs'}</span><span class="side" style="justify-content:flex-end;flex:1">${m.b.n} ${m.b.f}</span>`;
       if(m.winner){const s=document.createElement("span"); s.style.cssText="color:var(--grass);font-weight:800;font-size:11px;margin-left:6px"; s.textContent=m.winner.f; el.appendChild(s);}
       bc.appendChild(el);
     });
     const btn=$("#tyPlay");
     const next=TY.queue[TY.qi];
     btn.style.display="block"; btn.disabled=false;
-    btn.textContent = next ? (next.mine?"⚽ DEIN Spiel: "+next.b.n:"Spiel: "+next.a.n+" vs "+next.b.n) : "Runde fertig ▶";
+    btn.textContent = next ? (next.mine?"⚽ DEIN Spiel: "+next.b.n:"Spiel simulieren: "+next.a.n+" vs "+next.b.n) : "Runde fertig ▶";
   }
   $("#tyPlay").addEventListener("click",()=>{
+    if(!TY) return;
+    if(TY.phase==="groups"){ handleGroupPlay(); return; }
     const m=TY.queue[TY.qi];
     if(!m){ nextRound(); return; }
     if(!m.mine){ const w=simMatch(m.a,m.b); m.winner=w; addCoins(6); TY.qi++; save(); toast(w.f+" "+w.n+" gewinnt"); renderBracket(); return; }
