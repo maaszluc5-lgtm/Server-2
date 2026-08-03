@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#06130d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Torjäger">
-<title>Torjäger — WM · EM · Elfmeter · Sammelalbum</title>
+<title>Torjäger — WM 2026 · 48 Länder · Sammelalbum</title>
 <style>
   :root{
     --ground:#06130d; --panel:#0d2019; --panel2:#123024; --raise:#17402f;
@@ -54,10 +54,10 @@
   .back{background:var(--panel); border:1px solid var(--line); color:var(--text); width:40px; height:40px; border-radius:11px; font-size:18px; cursor:pointer}
   .backrow h2{font-size:19px; font-weight:900; text-transform:uppercase; letter-spacing:.02em; margin:0}
   .arena{background:linear-gradient(180deg,#0b2419,#08160f); border:1px solid var(--line); border-radius:18px; padding:14px 12px 12px; box-shadow:var(--shadow)}
-  .scoreboard{display:flex; align-items:center; justify-content:center; gap:12px; margin:2px 0 12px; font-weight:900}
-  .scoreboard .team{flex:1; text-align:center; font-size:13px; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .scoreboard{display:flex; align-items:center; justify-content:center; gap:10px; margin:2px 0 12px; font-weight:900}
+  .scoreboard .team{flex:1; text-align:center; font-size:13px; text-transform:uppercase; letter-spacing:.02em; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
   .scoreboard .team.you{color:var(--grass)}
-  .scoreboard .sc{font-size:30px; font-variant-numeric:tabular-nums; min-width:34px; text-align:center}
+  .scoreboard .sc{font-size:30px; font-variant-numeric:tabular-nums; min-width:32px; text-align:center}
   .scoreboard .sc.you{color:var(--grass)}
   .dots{display:flex; gap:4px; justify-content:center; margin-top:5px; flex-wrap:wrap}
   .dot{width:9px; height:9px; border-radius:50%; background:#0c281c; border:1px solid var(--line)}
@@ -71,32 +71,36 @@
   .zone.pick:hover,.zone.pick:active{background:rgba(47,224,113,.16); border-color:rgba(47,224,113,.5)}
   .keeper{position:absolute; font-size:34px; left:50%; top:44%; transform:translate(-50%,-50%); transition:all .42s cubic-bezier(.3,1.3,.5,1); z-index:3; filter:drop-shadow(0 4px 6px rgba(0,0,0,.5))}
   .ball{position:absolute; font-size:26px; left:50%; bottom:5%; transform:translate(-50%,0); transition:all .42s cubic-bezier(.4,0,.6,1); z-index:2; filter:drop-shadow(0 5px 5px rgba(0,0,0,.5))}
-  .flash{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:40px; text-transform:uppercase; pointer-events:none; opacity:0; z-index:5}
+  .flash{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:38px; text-transform:uppercase; pointer-events:none; opacity:0; z-index:5}
   .flash.show{animation:pop .9s ease}
   .flash.goal{color:var(--grass)} .flash.save{color:var(--danger)}
   @keyframes pop{0%{opacity:0;transform:scale(.6)}25%{opacity:1;transform:scale(1.08)}75%{opacity:1;transform:scale(1)}100%{opacity:0}}
   .hint{text-align:center; color:var(--muted); font-size:13px; margin:8px 0 2px; min-height:18px}
   .hint b{color:var(--grass)}
-  .bracket{display:flex; flex-direction:column; gap:10px; margin-top:6px}
+  .roundtag{text-align:center; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--gold); margin:0 0 6px}
+  .bracket{display:flex; flex-direction:column; gap:8px; margin-top:6px}
   .round-lbl{color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.08em; margin:6px 2px 0}
-  .match{display:flex; align-items:center; gap:8px; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:9px 12px}
-  .match .vs{color:var(--muted); font-weight:700; font-size:12px}
-  .match .side{display:flex; align-items:center; gap:7px; font-weight:800; font-size:14px}
+  .match{display:flex; align-items:center; gap:8px; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:9px 12px; font-size:13px}
+  .match .vs{color:var(--muted); font-weight:700; font-size:11px}
+  .match .side{display:flex; align-items:center; gap:6px; font-weight:800}
   .match.you-here{border-color:var(--grass); box-shadow:0 0 0 1px var(--grass) inset}
+  .match.done{opacity:.6}
   .teamsel{display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:6px}
   .teamsel .t{display:flex; align-items:center; gap:8px; padding:12px; border:1px solid var(--line); border-radius:12px; background:var(--panel); cursor:pointer; font-weight:800; font-size:14px}
   .teamsel .t:active{transform:scale(.98)}
   .teamsel .t .fl{font-size:20px}
-  /* ---- uniform collectible sticker ---- */
   .card{position:relative; border-radius:13px; overflow:hidden; background:linear-gradient(172deg,#193227,#0e2019); border:1px solid var(--line); box-shadow:0 6px 16px rgba(0,0,0,.35);}
   .card .hd{display:flex; justify-content:space-between; align-items:center; padding:6px 9px; background:rgba(255,255,255,.05); font-size:11px; font-weight:800; color:var(--muted)}
   .card .hd .num{font-variant-numeric:tabular-nums; letter-spacing:.03em}
   .card .hd .fl{font-size:16px}
-  .card .port{font-size:44px; text-align:center; padding:8px 0 2px; line-height:1}
-  .card .bd{padding:2px 9px 10px}
-  .card .nm{font-weight:800; font-size:13px; line-height:1.05; text-wrap:balance; min-height:29px}
+  .card .port{font-size:40px; text-align:center; padding:7px 0 1px; line-height:1}
+  .card .av{position:relative; width:54px; height:54px; margin:9px auto 3px; border-radius:15px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:19px; color:#fff; letter-spacing:.01em; box-shadow:inset 0 -9px 16px rgba(0,0,0,.32), 0 3px 8px rgba(0,0,0,.35); text-shadow:0 1px 3px rgba(0,0,0,.55)}
+  .card .av .pb{position:absolute; right:-5px; bottom:-6px; font-size:14px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.5))}
+  .card.locked .av{background:#12241a!important; color:var(--muted); box-shadow:none}
+  .card .bd{padding:2px 8px 9px}
+  .card .nm{font-weight:800; font-size:12.5px; line-height:1.06; text-wrap:balance; min-height:31px}
   .card .meta{display:flex; justify-content:space-between; align-items:center; margin-top:3px}
-  .card .nat{color:var(--muted); font-size:10px}
+  .card .nat{color:var(--muted); font-size:9.5px}
   .card .rt{color:var(--grass); font-weight:900; font-size:13px; font-variant-numeric:tabular-nums}
   .card.locked{background:#0c1a14; border-style:dashed}
   .card.locked .port{filter:grayscale(1); opacity:.3}
@@ -112,7 +116,6 @@
   .natsec .h .fl{font-size:20px}
   .natsec .h .pg{margin-left:auto; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums}
   .natsec .h .pg.done{color:var(--grass)}
-  .natsec.done .h .name::after{content:" ✓"; color:var(--grass)}
   .cardrow{display:grid; grid-template-columns:repeat(4,1fr); gap:8px}
   .filterbar{display:flex; gap:7px; margin:10px 0 2px; flex-wrap:wrap}
   .chip{font-size:12px; font-weight:800; padding:6px 11px; border-radius:99px; border:1px solid var(--line); background:var(--panel); color:var(--muted); cursor:pointer}
@@ -134,7 +137,7 @@
 
   <section class="screen active" id="s-home">
     <h1 class="hero">Sammle das <span>ganze<br>WM-Album</span></h1>
-    <p class="sub">Gewinne WM & EM, verwandle Elfmeter, kassiere Coins und öffne Tüten voller Sammelkarten.</p>
+    <p class="sub">Echte Stars, echte Länder. Gewinne WM & EM, verwandle Elfmeter, kassiere Coins und öffne Tüten voller Sammelkarten.</p>
     <div class="stat-row">
       <div class="stat"><div class="k">Album</div><div class="v"><span id="stCards">0</span>/<span id="stTotal">0</span></div></div>
       <div class="stat"><div class="k">Siegesserie</div><div class="v" id="stStreak">0</div></div>
@@ -143,16 +146,17 @@
     <div class="grid" style="margin-top:6px">
       <button class="tile" data-go="penalty"><span class="glow"></span><div class="ic">🥅</div><div><div class="t">Elfmeter</div><div class="d">Schnelles Duell · Best of 5</div></div></button>
       <button class="tile" data-go="packs"><span class="glow"></span><div class="ic">📦</div><div><div class="t">Tüte öffnen</div><div class="d">Coins gegen Karten</div></div></button>
-      <button class="tile" data-mode="WM" data-go="tourney"><span class="glow"></span><div class="ic">🏆</div><div><div class="t">WM</div><div class="d">K.-o. bis zum Titel</div></div></button>
+      <button class="tile" data-mode="WM" data-go="tourney"><span class="glow"></span><div class="ic">🏆</div><div><div class="t">WM</div><div class="d">Jedes Spiel selbst</div></div></button>
       <button class="tile" data-mode="EM" data-go="tourney"><span class="glow"></span><div class="ic">🌍</div><div><div class="t">EM</div><div class="d">Europas Beste</div></div></button>
       <button class="tile wide" data-go="book"><div class="ic">📖</div><div><div class="t">WM-Album</div><div class="d">Deine Sammlung Land für Land</div></div><div class="spacer"></div><div style="font-size:22px">›</div></button>
     </div>
-    <div class="foot">Fortschritt wird auf deinem Gerät gespeichert.<br>Alle Spieler sind frei erfunden. ⚽</div>
+    <div class="foot">Fortschritt wird auf deinem Gerät gespeichert.<br>Fan-Spiel · keine offizielle Lizenz · Werte frei geschätzt. ⚽</div>
   </section>
 
   <section class="screen" id="s-penalty">
     <div class="backrow"><button class="back" data-back>‹</button><h2 id="penTitle">Elfmeterschießen</h2></div>
     <div class="arena">
+      <div class="roundtag" id="pnRound"></div>
       <div class="scoreboard">
         <div class="team you" id="pnYouName">Du</div>
         <div class="sc you" id="pnYouSc">0</div>
@@ -183,16 +187,16 @@
   <section class="screen" id="s-tourney">
     <div class="backrow"><button class="back" data-back>‹</button><h2 id="tyTitle">Turnier</h2></div>
     <div id="tyPick" style="display:none">
-      <p class="sub">Wähle dein Team – dann kämpfst du dich per Elfmeterschießen durchs K.-o.-Bracket bis zum Titel.</p>
+      <p class="sub">Wähle dein Team. Du spielst <b>jedes</b> Spiel im Turnier selbst – als echtes Match mit Spieluhr. Bei Unentschieden gibt's Elfmeterschießen.</p>
       <div class="teamsel" id="tyTeams"></div>
     </div>
     <div id="tyBoard" style="display:none">
       <div class="stat-row">
-        <div class="stat"><div class="k">Dein Team</div><div class="v" id="tyMyTeam" style="font-size:16px">–</div></div>
-        <div class="stat"><div class="k">Runde</div><div class="v" id="tyRound" style="font-size:16px">–</div></div>
+        <div class="stat"><div class="k">Dein Team</div><div class="v" id="tyMyTeam" style="font-size:15px">–</div></div>
+        <div class="stat"><div class="k">Runde</div><div class="v" id="tyRound" style="font-size:15px">–</div></div>
       </div>
       <div class="bracket" id="tyBracket"></div>
-      <button class="btn gold block" id="tyPlay" style="margin-top:14px">Nächstes Spiel ▶</button>
+      <button class="btn gold block" id="tyPlay" style="margin-top:14px">Runde spielen ▶</button>
     </div>
   </section>
 
@@ -229,56 +233,85 @@
 (function(){
   "use strict";
   const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-  const KEY="torjaeger_v2";
+  const KEY="torjaeger_v3";
 
-  function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
-  const NATIONS=[
-    {n:"Deutschland",f:"🇩🇪",eu:1},{n:"Frankreich",f:"🇫🇷",eu:1},{n:"Spanien",f:"🇪🇸",eu:1},
-    {n:"England",f:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",eu:1},{n:"Italien",f:"🇮🇹",eu:1},{n:"Portugal",f:"🇵🇹",eu:1},
-    {n:"Niederlande",f:"🇳🇱",eu:1},{n:"Belgien",f:"🇧🇪",eu:1},{n:"Kroatien",f:"🇭🇷",eu:1},
-    {n:"Brasilien",f:"🇧🇷",eu:0},{n:"Argentinien",f:"🇦🇷",eu:0},{n:"Uruguay",f:"🇺🇾",eu:0},
-    {n:"Japan",f:"🇯🇵",eu:0},{n:"Marokko",f:"🇲🇦",eu:0},{n:"USA",f:"🇺🇸",eu:0},{n:"Senegal",f:"🇸🇳",eu:0}
+  /* ---- real players (fan game, ratings are for fun) ---- */
+  const TEAMS=[
+    {n:"Deutschland",f:"🇩🇪",eu:1,c:"#c8102e",p:[["Manuel Neuer","TW",89],["Marc-A. ter Stegen","TW",86],["Joshua Kimmich","MF",88],["Jamal Musiala","MF",90],["Florian Wirtz","MF",89],["Kai Havertz","ST",85],["Antonio Rüdiger","ABW",87],["Leroy Sané","ST",84]]},
+    {n:"Frankreich",f:"🇫🇷",eu:1,c:"#274796",p:[["Mike Maignan","TW",87],["Kylian Mbappé","ST",94],["Antoine Griezmann","MF",88],["A. Tchouaméni","MF",86],["William Saliba","ABW",86],["Ousmane Dembélé","ST",86],["Théo Hernández","ABW",84],["N'Golo Kanté","MF",84]]},
+    {n:"Spanien",f:"🇪🇸",eu:1,c:"#c60b1e",p:[["Unai Simón","TW",84],["Rodri","MF",90],["Lamine Yamal","ST",88],["Pedri","MF",87],["Nico Williams","ST",85],["Álvaro Morata","ST",83],["Dani Carvajal","ABW",84],["Gavi","MF",84]]},
+    {n:"England",f:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",eu:1,c:"#cf0a2c",p:[["Jordan Pickford","TW",84],["Jude Bellingham","MF",91],["Harry Kane","ST",90],["Bukayo Saka","ST",87],["Phil Foden","MF",88],["Declan Rice","MF",85],["John Stones","ABW",84],["Cole Palmer","MF",85]]},
+    {n:"Italien",f:"🇮🇹",eu:1,c:"#1a5fb4",p:[["G. Donnarumma","TW",88],["Nicolò Barella","MF",86],["Federico Chiesa","ST",84],["A. Bastoni","ABW",85],["Sandro Tonali","MF",83],["L. Pellegrini","MF",81],["Di Lorenzo","ABW",82],["Retegui","ST",80]]},
+    {n:"Portugal",f:"🇵🇹",eu:1,c:"#1e7a3d",p:[["Diogo Costa","TW",85],["Cristiano Ronaldo","ST",88],["Bruno Fernandes","MF",88],["Bernardo Silva","MF",87],["Rafael Leão","ST",86],["Rúben Dias","ABW",87],["Vitinha","MF",84],["João Félix","ST",82]]},
+    {n:"Niederlande",f:"🇳🇱",eu:1,c:"#ea5b13",p:[["Bart Verbruggen","TW",80],["Virgil van Dijk","ABW",88],["Frenkie de Jong","MF",87],["Cody Gakpo","ST",84],["Memphis Depay","ST",83],["Xavi Simons","MF",84],["Tijjani Reijnders","MF",82],["D. Dumfries","ABW",82]]},
+    {n:"Belgien",f:"🇧🇪",eu:1,c:"#ef3340",p:[["Thibaut Courtois","TW",89],["Kevin De Bruyne","MF",90],["Romelu Lukaku","ST",85],["Jérémy Doku","ST",84],["Youri Tielemans","MF",82],["Amadou Onana","MF",81],["Leandro Trossard","ST",82]]},
+    {n:"Kroatien",f:"🇭🇷",eu:1,c:"#d10012",p:[["Dominik Livaković","TW",83],["Luka Modrić","MF",86],["Joško Gvardiol","ABW",85],["Mateo Kovačić","MF",84],["A. Kramarić","ST",81],["Ivan Perišić","ST",80],["Petar Sučić","MF",78]]},
+    {n:"Norwegen",f:"🇳🇴",eu:1,c:"#ba0c2f",p:[["Ørjan Nyland","TW",76],["Erling Haaland","ST",91],["Martin Ødegaard","MF",87],["A. Sørloth","ST",81],["Antonio Nusa","ST",78],["Sander Berge","MF",77],["Fredrik Aursnes","MF",77]]},
+    {n:"Dänemark",f:"🇩🇰",eu:1,c:"#c60c30",p:[["Kasper Schmeichel","TW",79],["Rasmus Højlund","ST",82],["Christian Eriksen","MF",83],["P. Højbjerg","MF",81],["A. Christensen","ABW",82],["Morten Hjulmand","MF",78]]},
+    {n:"Schweiz",f:"🇨🇭",eu:1,c:"#d52b1e",p:[["Yann Sommer","TW",83],["Granit Xhaka","MF",83],["Manuel Akanji","ABW",83],["Breel Embolo","ST",80],["Fabian Rieder","MF",78],["Dan Ndoye","ST",78]]},
+    {n:"Österreich",f:"🇦🇹",eu:1,c:"#ed2939",p:[["David Alaba","ABW",83],["Marcel Sabitzer","MF",82],["Marko Arnautović","ST",78],["C. Baumgartner","MF",80],["Konrad Laimer","MF",80],["Patrick Wimmer","ST",76]]},
+    {n:"Polen",f:"🇵🇱",eu:1,c:"#dc143c",p:[["W. Szczęsny","TW",82],["Robert Lewandowski","ST",87],["Piotr Zieliński","MF",83],["N. Zalewski","MF",77],["Matty Cash","ABW",77],["Sebastian Szymański","MF",78]]},
+    {n:"Serbien",f:"🇷🇸",eu:1,c:"#c6363c",p:[["S. Milinković-Savić","TW",78],["Dušan Vlahović","ST",84],["S. Milinković-S.","MF",84],["Dušan Tadić","MF",80],["Filip Kostić","ABW",79],["A. Mitrović","ST",82]]},
+    {n:"Türkei",f:"🇹🇷",eu:1,c:"#e30a17",p:[["Uğurcan Çakır","TW",78],["Arda Güler","MF",81],["Hakan Çalhanoğlu","MF",85],["Kenan Yıldız","ST",80],["Kerem Aktürkoğlu","ST",78],["Merih Demiral","ABW",79]]},
+    {n:"Schweden",f:"🇸🇪",eu:1,c:"#006aa7",p:[["Robin Olsen","TW",76],["Alexander Isak","ST",86],["Viktor Gyökeres","ST",85],["Dejan Kulusevski","MF",83],["Emil Forsberg","MF",78],["V. Lindelöf","ABW",79]]},
+    {n:"Ukraine",f:"🇺🇦",eu:1,c:"#005bbb",p:[["Andriy Lunin","TW",80],["Mykhailo Mudryk","ST",80],["Oleksandr Zinchenko","ABW",80],["Georgiy Sudakov","MF",80],["Artem Dovbyk","ST",81],["R. Yaremchuk","ST",76]]},
+    {n:"Argentinien",f:"🇦🇷",eu:0,c:"#6c9bd1",p:[["Emiliano Martínez","TW",87],["Lionel Messi","ST",93],["Lautaro Martínez","ST",87],["Julián Álvarez","ST",86],["Enzo Fernández","MF",85],["A. Mac Allister","MF",85],["Rodrigo De Paul","MF",83],["Cristian Romero","ABW",85]]},
+    {n:"Brasilien",f:"🇧🇷",eu:0,c:"#009c3b",p:[["Alisson","TW",89],["Vinícius Júnior","ST",91],["Rodrygo","ST",87],["Raphinha","ST",86],["Neymar","ST",86],["Bruno Guimarães","MF",84],["Casemiro","MF",83],["Marquinhos","ABW",86]]},
+    {n:"Uruguay",f:"🇺🇾",eu:0,c:"#3f6fa3",p:[["Sergio Rochet","TW",78],["Federico Valverde","MF",88],["Darwin Núñez","ST",84],["Ronald Araújo","ABW",84],["R. Bentancur","MF",81],["G. De Arrascaeta","MF",82],["Manuel Ugarte","MF",80]]},
+    {n:"Kolumbien",f:"🇨🇴",eu:0,c:"#14477a",p:[["Camilo Vargas","TW",78],["Luis Díaz","ST",86],["James Rodríguez","MF",83],["Jhon Durán","ST",80],["Dávinson Sánchez","ABW",80],["Jefferson Lerma","MF",78],["Richard Ríos","MF",78]]},
+    {n:"Ecuador",f:"🇪🇨",eu:0,c:"#034ea2",p:[["H. Domínguez","TW",77],["Moisés Caicedo","MF",85],["Enner Valencia","ST",80],["Gonzalo Plata","ST",78],["Pervis Estupiñán","ABW",80],["Piero Hincapié","ABW",81]]},
+    {n:"Chile",f:"🇨🇱",eu:0,c:"#0039a6",p:[["Claudio Bravo","TW",76],["Alexis Sánchez","ST",80],["Arturo Vidal","MF",79],["B. Brereton Díaz","ST",78],["Guillermo Maripán","ABW",77],["Darío Osorio","ST",76]]},
+    {n:"Paraguay",f:"🇵🇾",eu:0,c:"#d52b1e",p:[["Antony Silva","TW",73],["Miguel Almirón","MF",79],["Antonio Sanabria","ST",78],["Julio Enciso","ST",79],["Omar Alderete","ABW",77],["Diego Gómez","MF",77]]},
+    {n:"USA",f:"🇺🇸",eu:0,c:"#3c3b6e",p:[["Matt Turner","TW",79],["Christian Pulisic","ST",85],["Weston McKennie","MF",81],["Tyler Adams","MF",80],["Gio Reyna","MF",79],["Antonee Robinson","ABW",80],["Folarin Balogun","ST",80]]},
+    {n:"Mexiko",f:"🇲🇽",eu:0,c:"#006847",p:[["Guillermo Ochoa","TW",80],["Santiago Giménez","ST",82],["Edson Álvarez","MF",81],["Hirving Lozano","ST",81],["Raúl Jiménez","ST",79],["César Montes","ABW",77],["Orbelín Pineda","MF",78]]},
+    {n:"Kanada",f:"🇨🇦",eu:0,c:"#d52b1e",p:[["M. Crépeau","TW",76],["Alphonso Davies","ABW",85],["Jonathan David","ST",84],["Cyle Larin","ST",78],["Tajon Buchanan","ST",78],["S. Eustáquio","MF",78]]},
+    {n:"Costa Rica",f:"🇨🇷",eu:0,c:"#002b7f",p:[["Keylor Navas","TW",82],["Joel Campbell","ST",76],["Manfred Ugalde","ST",78],["Celso Borges","MF",74],["Óscar Duarte","ABW",73],["Carlos Mora","MF",73]]},
+    {n:"Panama",f:"🇵🇦",eu:0,c:"#005293",p:[["Orlando Mosquera","TW",73],["Adalberto Carrasquilla","MF",76],["José Fajardo","ST",74],["Ismael Díaz","ST",74],["Fidel Escobar","ABW",73],["Aníbal Godoy","MF",73]]},
+    {n:"Jamaika",f:"🇯🇲",eu:0,c:"#009b3a",p:[["Andre Blake","TW",76],["Leon Bailey","ST",81],["Michail Antonio","ST",77],["D. Decordova-Reid","MF",76],["Demarai Gray","ST",77],["Ethan Pinnock","ABW",75]]},
+    {n:"Marokko",f:"🇲🇦",eu:0,c:"#b71c2b",p:[["Yassine Bounou","TW",84],["Achraf Hakimi","ABW",85],["Brahim Díaz","MF",82],["Y. En-Nesyri","ST",80],["Sofyan Amrabat","MF",80],["Hakim Ziyech","MF",80],["Azzedine Ounahi","MF",78]]},
+    {n:"Senegal",f:"🇸🇳",eu:0,c:"#00853f",p:[["Édouard Mendy","TW",82],["Sadio Mané","ST",84],["Nicolas Jackson","ST",81],["Kalidou Koulibaly","ABW",82],["Ismaïla Sarr","ST",80],["Pape Matar Sarr","MF",79],["Idrissa Gueye","MF",78]]},
+    {n:"Nigeria",f:"🇳🇬",eu:0,c:"#017a3e",p:[["Stanley Nwabali","TW",76],["Victor Osimhen","ST",88],["Ademola Lookman","ST",84],["Samuel Chukwueze","ST",79],["Alex Iwobi","MF",80],["Wilfred Ndidi","MF",80],["Calvin Bassey","ABW",78]]},
+    {n:"Ägypten",f:"🇪🇬",eu:0,c:"#c8102e",p:[["Mohamed El Shenawy","TW",77],["Mohamed Salah","ST",89],["Omar Marmoush","ST",82],["Trézéguet","ST",78],["Mohamed Elneny","MF",76],["Mostafa Mohamed","ST",77]]},
+    {n:"Ghana",f:"🇬🇭",eu:0,c:"#006b3f",p:[["Lawrence Ati-Zigi","TW",75],["Mohammed Kudus","MF",83],["Thomas Partey","MF",83],["Iñaki Williams","ST",80],["Jordan Ayew","ST",78],["Antoine Semenyo","ST",79]]},
+    {n:"Elfenbeinküste",f:"🇨🇮",eu:0,c:"#f77f00",p:[["Yahia Fofana","TW",75],["Sébastien Haller","ST",80],["Franck Kessié","MF",82],["Nicolas Pépé","ST",79],["Ibrahim Sangaré","MF",79],["Amad Diallo","ST",81]]},
+    {n:"Kamerun",f:"🇨🇲",eu:0,c:"#007a5e",p:[["André Onana","TW",84],["Frank Anguissa","MF",82],["Bryan Mbeumo","ST",82],["Vincent Aboubakar","ST",77],["Karl Toko Ekambi","ST",76],["Nouhou Tolo","ABW",74]]},
+    {n:"Algerien",f:"🇩🇿",eu:0,c:"#007229",p:[["Alexandre Oukidja","TW",74],["Riyad Mahrez","ST",83],["Ismaël Bennacer","MF",81],["Mohamed Amoura","ST",80],["Baghdad Bounedjah","ST",76],["Rayan Aït-Nouri","ABW",80]]},
+    {n:"Tunesien",f:"🇹🇳",eu:0,c:"#e70013",p:[["Aymen Dahmen","TW",74],["Youssef Msakni","ST",76],["Aïssa Laïdouni","MF",77],["Ellyes Skhiri","MF",78],["Hannibal Mejbri","MF",77],["Montassar Talbi","ABW",74]]},
+    {n:"Südafrika",f:"🇿🇦",eu:0,c:"#007749",p:[["Ronwen Williams","TW",78],["Percy Tau","ST",76],["Themba Zwane","MF",75],["Teboho Mokoena","MF",76],["Lyle Foster","ST",76],["Siyabonga Ngezana","ABW",73]]},
+    {n:"Mali",f:"🇲🇱",eu:0,c:"#14b53a",p:[["Djigui Diarra","TW",73],["Yves Bissouma","MF",80],["Amadou Haïdara","MF",79],["El Bilal Touré","ST",78],["Nene Dorgeles","ST",75],["Kiki Kouyaté","ABW",74]]},
+    {n:"Japan",f:"🇯🇵",eu:0,c:"#bc002d",p:[["Zion Suzuki","TW",79],["Kaoru Mitoma","ST",83],["Takefusa Kubo","MF",83],["Daichi Kamada","MF",80],["Wataru Endo","MF",79],["Ritsu Dōan","ST",79],["Takumi Minamino","ST",78]]},
+    {n:"Südkorea",f:"🇰🇷",eu:0,c:"#0047a0",p:[["Kim Seung-gyu","TW",76],["Son Heung-min","ST",86],["Kim Min-jae","ABW",84],["Lee Kang-in","MF",82],["Hwang Hee-chan","ST",80],["Hwang In-beom","MF",78]]},
+    {n:"Australien",f:"🇦🇺",eu:0,c:"#00843d",p:[["Mathew Ryan","TW",78],["Jackson Irvine","MF",77],["Riley McGree","MF",77],["Martin Boyle","ST",76],["Kusini Yengi","ST",74],["Harry Souttar","ABW",76]]},
+    {n:"Iran",f:"🇮🇷",eu:0,c:"#239f40",p:[["Alireza Beiranvand","TW",76],["Mehdi Taremi","ST",83],["Sardar Azmoun","ST",80],["A. Jahanbakhsh","ST",78],["Mehdi Ghayedi","ST",75],["Ehsan Hajsafi","ABW",74]]},
+    {n:"Saudi-Arabien",f:"🇸🇦",eu:0,c:"#006c35",p:[["Mohammed Al-Owais","TW",75],["Salem Al-Dawsari","ST",80],["Firas Al-Buraikan","ST",77],["Salman Al-Faraj","MF",74],["Nasser Al-Dawsari","MF",74],["Ali Al-Bulaihi","ABW",73]]},
+    {n:"Katar",f:"🇶🇦",eu:0,c:"#8a1538",p:[["Meshaal Barsham","TW",73],["Akram Afif","ST",80],["Almoez Ali","ST",78],["Hassan Al-Haydos","MF",75],["Boualem Khoukhi","ABW",73],["Assim Madibo","MF",73]]},
+    {n:"Neuseeland",f:"🇳🇿",eu:0,c:"#00247d",p:[["Oliver Sail","TW",71],["Chris Wood","ST",79],["Marko Stamenić","MF",73],["Ben Waine","ST",72],["Michael Boxall","ABW",72],["Matthew Garbett","MF",72]]}
   ];
-  const FIRST=["Leo","Max","Nino","Kai","Enzo","Luca","Rafa","Yann","Milo","Theo","Nico","Aron","Jos","Deniz","Ferro","Bax","Vito","Sami","Elis","Odin","Ravi","Toni","Malo","Dario","Emre"];
-  const LAST=["Vogt","Marra","Sting","Delacroix","Bianchi","Okafor","Halden","Reyes","Novak","Torstad","Kandé","Serra","Braun","Falk","Duarte","Voss","Renn","Sölvberg","Adeyi","Costas","Bahar","Lindqvist","Moreno","Wilder","Kovi"];
-  const POS=["TW","ABW","MF","ST"];
   const PORT={TW:"🧤",ABW:"🛡️",MF:"🎯",ST:"⚽"};
+  const NATCOLOR={}; TEAMS.forEach(t=>{NATCOLOR[t.n]=t.c;});
+  function initials(nm){const w=nm.split(/\s+/).map(x=>x.replace(/[^A-Za-zÀ-ÿ]/g,"")).filter(Boolean); return (w.length>1?w[0][0]+w[w.length-1][0]:(w[0]||"?").slice(0,2)).toUpperCase();}
+  const avatar=c=>`<div class="av" style="background:linear-gradient(150deg,${NATCOLOR[c.nat]||'#2a5b45'},#0a1712)">${initials(c.nm)}<span class="pb">${PORT[c.pos]||""}</span></div>`;
   function buildRoster(){
-    const rng=mulberry32(20260722), r=[]; const per=5; // 5 per nation = 80
-    NATIONS.forEach(nat=>{
-      for(let k=0;k<per;k++){
-        const pos = k===0?"TW":POS[1+Math.floor(rng()*3)];
-        const rating=70+Math.floor(rng()*29);
-        const nm=FIRST[Math.floor(rng()*FIRST.length)]+" "+LAST[Math.floor(rng()*LAST.length)];
-        r.push({id:r.length,num:r.length+1,nm,pos,rating,nat:nat.n,fl:nat.f,eu:nat.eu});
-      }
-    });
-    return r;
+    const r=[]; TEAMS.forEach(t=>t.p.forEach(pl=>{ r.push({id:r.length,num:r.length+1,nm:pl[0],pos:pl[1],rating:pl[2],nat:t.n,fl:t.f,eu:t.eu}); })); return r;
   }
   const ROSTER=buildRoster();
+  const NATIONS=TEAMS.map(t=>({n:t.n,f:t.f,eu:t.eu}));
   const NATLIST=NATIONS.map(n=>n.n);
   const natCards=name=>ROSTER.filter(c=>c.nat===name);
 
   let S=load();
-  function load(){try{const j=JSON.parse(localStorage.getItem(KEY)); if(j&&j.v===2) return j;}catch(e){} return {v:2, coins:180, coll:{}, streak:0, titles:0, doneNats:{}};}
+  function load(){try{const j=JSON.parse(localStorage.getItem(KEY)); if(j&&j.v===3) return j;}catch(e){} return {v:3, coins:200, coll:{}, streak:0, titles:0, doneNats:{}};}
   function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
   const owned=id=>S.coll[id]||0;
   function give(id){S.coll[id]=(S.coll[id]||0)+1;}
   function addCoins(n){S.coins=Math.max(0,S.coins+n); renderCoins();}
   const ownedCount=()=>Object.values(S.coll).filter(x=>x>0).length;
   function natComplete(name){return natCards(name).every(c=>owned(c.id))}
-  function checkNatBonus(){
-    let msg=null;
-    NATLIST.forEach(name=>{ if(natComplete(name) && !S.doneNats[name]){ S.doneNats[name]=1; addCoins(100); msg=name; } });
-    return msg;
-  }
+  function checkNatBonus(){let msg=null; NATLIST.forEach(name=>{ if(natComplete(name) && !S.doneNats[name]){ S.doneNats[name]=1; addCoins(100); msg=name; } }); return msg;}
   const natDoneCount=()=>NATLIST.filter(natComplete).length;
 
   function renderCoins(){$("#coinBal").textContent=S.coins;}
-  function renderHome(){
-    $("#stCards").textContent=ownedCount(); $("#stTotal").textContent=ROSTER.length;
-    $("#stStreak").textContent=S.streak; $("#stTitles").textContent=S.titles;
-  }
+  function renderHome(){$("#stCards").textContent=ownedCount(); $("#stTotal").textContent=ROSTER.length; $("#stStreak").textContent=S.streak; $("#stTitles").textContent=S.titles;}
   function go(id){$$(".screen").forEach(s=>s.classList.remove("active")); $("#s-"+id).classList.add("active"); window.scrollTo(0,0);}
   $$("[data-go]").forEach(b=>b.addEventListener("click",()=>{
     const g=b.dataset.go;
@@ -292,32 +325,31 @@
 
   function cardHTML(c,extra=""){
     return `<div class="card ${extra}">
-      <div class="hd"><span class="num">Nr. ${String(c.num).padStart(2,"0")}</span><span class="fl">${c.fl}</span></div>
-      <div class="port">${PORT[c.pos]||"👤"}</div>
-      <div class="bd">
-        <div class="nm">${c.nm}</div>
-        <div class="meta"><span class="nat">${c.pos} · ${c.nat}</span><span class="rt">${c.rating}</span></div>
-      </div>
+      <div class="hd"><span class="num">Nr. ${String(c.num).padStart(3,"0")}</span><span class="fl">${c.fl}</span></div>
+      ${avatar(c)}
+      <div class="bd"><div class="nm">${c.nm}</div><div class="meta"><span class="nat">${c.pos} · ${c.nat}</span><span class="rt">${c.rating}</span></div></div>
     </div>`;
   }
   function lockedHTML(c){
     return `<div class="card locked">
-      <div class="hd"><span class="num">Nr. ${String(c.num).padStart(2,"0")}</span><span class="fl">${c.fl}</span></div>
-      <div class="port">👤</div>
+      <div class="hd"><span class="num">Nr. ${String(c.num).padStart(3,"0")}</span><span class="fl">${c.fl}</span></div>
+      <div class="av">?</div>
       <div class="bd"><div class="nm">???</div><div class="meta"><span class="nat">${c.nat}</span><span class="rt">—</span></div></div>
     </div>`;
   }
 
-  /* PENALTY */
+  /* ---- PENALTY ENGINE ---- */
   const ZX=[18,50,82], ZY=[32,64];
   const zoneCoord=z=>({x:ZX[z%3], y:ZY[z<3?0:1]});
-  let PEN=null;
+  let PEN=null, MODE=null;
   function newDots(n){const d=$("#pnDots"); d.innerHTML=""; for(let i=0;i<n;i++){const s=document.createElement("div"); s.className="dot"; d.appendChild(s);}}
   function setDot(i,ok){const dots=$("#pnDots").children; if(dots[i]) dots[i].className="dot "+(ok?"g":"m");}
   function addDots(n){const d=$("#pnDots"); for(let i=0;i<n;i++){const s=document.createElement("div"); s.className="dot"; d.appendChild(s);}}
   function startShootout(opp,opts){
+    MODE="pen";
     PEN={opp,you:0,oppSc:0,round:0,turn:"you",sudden:false,base:opts.rounds||5,done:false,busy:false,opts};
     $("#penTitle").textContent=opts.title||"Elfmeterschießen";
+    $("#pnRound").textContent=opts.tag||"";
     $("#pnYouName").textContent=opts.youName||"Du"; $("#pnOppName").textContent=opp;
     $("#pnYouSc").textContent="0"; $("#pnOppSc").textContent="0";
     newDots(PEN.base*2); $("#pnResult").style.display="none"; resetKB(); go("penalty"); nextTurn();
@@ -328,9 +360,13 @@
     if(PEN.done) return; resetKB();
     const isYou=PEN.turn==="you"; setZones(isYou);
     if(isYou){$("#pnHint").innerHTML=PEN.sudden?"<b>Sudden Death!</b> Tippe eine Ecke.":"Dein Schuss – tippe eine Ecke.";}
-    else{$("#pnHint").innerHTML=`<b>${PEN.opp}</b> schießt…`; setTimeout(()=>shoot(Math.floor(Math.random()*6),false),850);}
+    else{$("#pnHint").innerHTML=`<b>${PEN.opp}</b> schießt…`; setTimeout(()=>shoot(Math.floor(Math.random()*6),false),800);}
   }
-  $$("#pnZones .zone").forEach(z=>z.addEventListener("click",()=>{ if(!PEN||PEN.turn!=="you"||PEN.busy) return; shoot(parseInt(z.dataset.z,10),true); }));
+  $$("#pnZones .zone").forEach(z=>z.addEventListener("click",()=>{
+    const zz=parseInt(z.dataset.z,10);
+    if(MODE==="match"){ matchShoot(zz); return; }
+    if(!PEN||PEN.turn!=="you"||PEN.busy) return; shoot(zz,true);
+  }));
   function pickKeeper(zone){ if(Math.random()<0.62) return Math.floor(Math.random()*6); return Math.random()<0.5?zone:Math.floor(Math.random()*6); }
   function shoot(zone,isYou){
     if(PEN.busy) return; PEN.busy=true; setZones(false);
@@ -344,8 +380,8 @@
       const idx=PEN.round*2+(isYou?0:1);
       if(isYou){if(scored)PEN.you++; $("#pnYouSc").textContent=PEN.you;} else {if(scored)PEN.oppSc++; $("#pnOppSc").textContent=PEN.oppSc;}
       setDot(idx,scored);
-      setTimeout(()=>{fl.className="flash"; advance(isYou); PEN.busy=false;},950);
-    },470);
+      setTimeout(()=>{fl.className="flash"; advance(isYou); PEN.busy=false;},900);
+    },460);
   }
   function advance(wasYou){
     if(wasYou) PEN.turn="opp"; else { PEN.turn="you"; PEN.round++; }
@@ -362,83 +398,178 @@
   function finish(win){
     PEN.done=true; setZones(false); $("#pnHint").textContent=""; $("#pnResult").style.display="block";
     const t=$("#pnResultTxt");
-    if(win){t.style.color="var(--grass)"; t.textContent="🎉 Gewonnen "+PEN.you+":"+PEN.oppSc;}
-    else{t.style.color="var(--danger)"; t.textContent="😖 Verloren "+PEN.you+":"+PEN.oppSc;}
+    if(win){t.style.color="var(--grass)"; t.textContent="✅ "+$("#pnYouName").textContent+" "+PEN.you+":"+PEN.oppSc;}
+    else{t.style.color="var(--danger)"; t.textContent="❌ "+PEN.you+":"+PEN.oppSc+" "+$("#pnOppName").textContent;}
+    $("#pnNext").textContent=PEN.opts.nextLabel||"Weiter";
     $("#pnNext").onclick=()=>{ if(PEN.opts.onEnd) PEN.opts.onEnd(win); };
   }
+
   function startFriendly(){
     const opp=NATIONS[Math.floor(Math.random()*NATIONS.length)];
-    startShootout(opp.n,{rounds:5,title:"Elfmeter-Duell",onEnd(win){
+    startShootout(opp.n,{rounds:5,title:"Elfmeter-Duell",youName:"Du",onEnd(win){
       if(win){addCoins(45); S.streak++; toast("🎉 +45 🪙 · Serie: "+S.streak);} else {addCoins(8); S.streak=0; toast("+8 🪙 Trostpreis");}
       save(); renderHome(); go("home");
     }});
   }
 
-  /* TOURNEY */
+  /* ---- CHANCEN-MATCH (real match, not penalties) ---- */
+  let MATCH=null;
+  const strengthOf=n=>{const cs=natCards(n); return cs.reduce((s,c)=>s+c.rating,0)/cs.length;};
+  const clampi=(v,a,b)=>Math.max(a,Math.min(b,v));
+  function flyShot(zone,kz,cb){
+    const tc=zoneCoord(zone),kc=zoneCoord(kz),b=$("#pnBall"),k=$("#pnKeeper");
+    k.style.left=kc.x+"%"; k.style.top=kc.y+"%"; k.style.transform="translate(-50%,-50%) rotate("+(kz%3===0?-25:kz%3===2?25:0)+"deg)";
+    b.style.transition="all .45s cubic-bezier(.35,0,.5,1)"; b.style.bottom="auto"; b.style.left=tc.x+"%"; b.style.top=tc.y+"%"; b.style.transform="translate(-50%,-50%) scale(.72)";
+    setTimeout(cb,470);
+  }
+  function flashText(txt,cls){const fl=$("#pnFlash"); fl.className="flash show "+cls; fl.textContent=txt; setTimeout(()=>fl.className="flash",900);}
+  function startMatch(you,opp,opts){
+    MODE="match";
+    const ys=strengthOf(you.n), os=strengthOf(opp.n);
+    const yc=clampi(3+Math.round((ys-78)/4),2,7), oc=clampi(3+Math.round((os-78)/4),2,7);
+    const list=[];
+    for(let i=0;i<yc;i++) list.push({t:"you",m:3+Math.floor(Math.random()*85)});
+    for(let i=0;i<oc;i++) list.push({t:"opp",m:3+Math.floor(Math.random()*85)});
+    list.sort((a,b)=>a.m-b.m);
+    MATCH={you,opp,ys:0,os:0,idx:0,list,busy:true,awaitingShot:false,opts};
+    $("#penTitle").textContent=opts.title||"Spiel";
+    $("#pnRound").textContent="0'";
+    $("#pnYouName").textContent=you.n; $("#pnOppName").textContent=opp.n;
+    $("#pnYouSc").textContent="0"; $("#pnOppSc").textContent="0";
+    $("#pnDots").innerHTML=""; $("#pnResult").style.display="none";
+    setZones(false); resetKB(); go("penalty");
+    $("#pnHint").innerHTML="🟢 Anpfiff!";
+    setTimeout(nextChance,900);
+  }
+  function nextChance(){
+    if(!MATCH) return;
+    if(MATCH.idx>=MATCH.list.length) return endMatch();
+    const e=MATCH.list[MATCH.idx]; $("#pnRound").textContent=e.m+"'"; resetKB(); MATCH.busy=false;
+    if(e.t==="you"){ MATCH.awaitingShot=true; setZones(true); $("#pnHint").innerHTML="⚽ <b>CHANCE!</b> Tippe die Ecke, wohin du schießt."; }
+    else { setZones(false); $("#pnHint").innerHTML=`<b>${MATCH.opp.n}</b> greift an…`; setTimeout(oppChance,900); }
+  }
+  function matchShoot(zone){
+    if(!MATCH||!MATCH.awaitingShot||MATCH.busy) return;
+    MATCH.awaitingShot=false; MATCH.busy=true; setZones(false);
+    const kz=pickKeeper(zone), scored=kz!==zone;
+    flyShot(zone,kz,()=>{
+      if(scored){MATCH.ys++; $("#pnYouSc").textContent=MATCH.ys; flashText("TOR!","goal");}
+      else flashText("GEHALTEN!","save");
+      MATCH.idx++; setTimeout(nextChance,1150);
+    });
+  }
+  function oppChance(){
+    const os=strengthOf(MATCH.opp.n), p=clampi(0.30+(os-80)*0.012,0.20,0.5);
+    const willScore=Math.random()<p, zone=Math.floor(Math.random()*6);
+    const kz=willScore?((zone+1+Math.floor(Math.random()*5))%6):zone;
+    flyShot(zone,kz,()=>{
+      if(willScore){MATCH.os++; $("#pnOppSc").textContent=MATCH.os; flashText("GEGENTOR!","save");}
+      else flashText("GEHALTEN!","goal");
+      MATCH.idx++; setTimeout(nextChance,1150);
+    });
+  }
+  function endMatch(){
+    $("#pnRound").textContent="90'"; setZones(false);
+    if(MATCH.ys===MATCH.os){
+      $("#pnHint").innerHTML="⏱️ Unentschieden – jetzt <b>Elfmeterschießen!</b>";
+      const you=MATCH.you, opp=MATCH.opp, onEnd=MATCH.opts.onEnd, nl=MATCH.opts.nextLabel;
+      setTimeout(()=>{ startShootout(opp.n,{rounds:5,title:"Elfmeterschießen",youName:you.n,tag:"Elfmeter",nextLabel:nl,onEnd(win){MODE=null; onEnd(win);}}); },1300);
+      return;
+    }
+    MODE=null; const win=MATCH.ys>MATCH.os;
+    $("#pnResult").style.display="block"; $("#pnHint").textContent="";
+    const t=$("#pnResultTxt"); t.style.color=win?"var(--grass)":"var(--danger)";
+    t.textContent=(win?"✅ ":"❌ ")+MATCH.you.n+" "+MATCH.ys+":"+MATCH.os+" "+MATCH.opp.n;
+    $("#pnNext").textContent=MATCH.opts.nextLabel||"Weiter";
+    $("#pnNext").onclick=()=>MATCH.opts.onEnd(win);
+  }
+
+  /* ---- TOURNAMENT: play EVERY match ---- */
   let TY=null;
-  const ROUND_NAMES=["Viertelfinale","Halbfinale","Finale"];
+  const ROUND_NAMES=["Achtelfinale","Viertelfinale","Halbfinale","Finale"];
   function openTourney(mode){
     $("#tyTitle").textContent=mode==="WM"?"Weltmeisterschaft":"Europameisterschaft";
-    const pool=mode==="EM"?NATIONS.filter(n=>n.eu):NATIONS.slice();
-    TY={mode,pool}; $("#tyPick").style.display="block"; $("#tyBoard").style.display="none";
+    const pool=(mode==="EM"?NATIONS.filter(n=>n.eu):NATIONS.slice());
+    TY={mode,pool,size:8}; $("#tyPick").style.display="block"; $("#tyBoard").style.display="none";
     const wrap=$("#tyTeams"); wrap.innerHTML="";
-    shuffle(pool).slice(0,8).forEach(t=>{const el=document.createElement("button"); el.className="t"; el.innerHTML=`<span class="fl">${t.f}</span>${t.n}`; el.onclick=()=>pickTeam(t); wrap.appendChild(el);});
+    shuffle(pool).forEach(t=>{const el=document.createElement("button"); el.className="t"; el.innerHTML=`<span class="fl">${t.f}</span>${t.n}`; el.onclick=()=>pickTeam(t); wrap.appendChild(el);});
     go("tourney");
   }
   function pickTeam(t){
-    let field=shuffle(TY.pool).filter(x=>x.n!==t.n).slice(0,7); field.push(t); field=shuffle(field);
-    TY.myTeam=t; TY.field=field; TY.round=0; TY.alive=field.map(x=>x.n);
-    $("#tyMyTeam").innerHTML=t.f+" "+t.n; $("#tyPick").style.display="none"; $("#tyBoard").style.display="block"; renderBracket();
+    let field=shuffle(TY.pool).filter(x=>x.n!==t.n).slice(0,TY.size-1); field.push(t); field=shuffle(field);
+    TY.myTeam=t; TY.alive=field; TY.round=0;
+    // starting round index so that final is last (size 8 -> start at Viertelfinale index 1)
+    TY.rIndex = ROUND_NAMES.length - Math.log2(TY.size); // 4 - 3 = 1
+    $("#tyMyTeam").innerHTML=t.f+" "+t.n; $("#tyPick").style.display="none"; $("#tyBoard").style.display="block";
+    buildQueue(); renderBracket();
+  }
+  function roundName(){ return ROUND_NAMES[TY.rIndex+TY.round] || "Finale"; }
+  function buildQueue(){
+    const a=TY.alive; TY.queue=[];
+    for(let i=0;i<a.length;i+=2){
+      let x=a[i], y=a[i+1]; const mine=(x.n===TY.myTeam.n||y.n===TY.myTeam.n);
+      if(y.n===TY.myTeam.n){const tmp=x;x=y;y=tmp;}
+      TY.queue.push({a:x,b:y,mine,winner:null});
+    }
+    TY.qi=0;
   }
   function renderBracket(){
-    $("#tyRound").textContent=ROUND_NAMES[TY.round]||"–";
+    $("#tyRound").textContent=roundName();
     const bc=$("#tyBracket"); bc.innerHTML="";
-    const alive=TY.alive.map(n=>TY.field.find(f=>f.n===n));
-    const lbl=document.createElement("div"); lbl.className="round-lbl"; lbl.textContent=ROUND_NAMES[TY.round]; bc.appendChild(lbl);
-    for(let i=0;i<alive.length;i+=2){
-      const a=alive[i], b=alive[i+1], m=document.createElement("div"); m.className="match";
-      if(a.n===TY.myTeam.n||b.n===TY.myTeam.n) m.classList.add("you-here");
-      m.innerHTML=`<span class="side">${a.f} ${a.n}</span><span class="vs">vs</span><span class="side" style="justify-content:flex-end;flex:1">${b.f} ${b.n}</span>`;
-      bc.appendChild(m);
-    }
-    const btn=$("#tyPlay"); btn.style.display="block"; btn.textContent="Nächstes Spiel ▶"; btn.disabled=false;
+    const lbl=document.createElement("div"); lbl.className="round-lbl"; lbl.textContent=roundName()+" · "+TY.queue.length+" Spiele"; bc.appendChild(lbl);
+    TY.queue.forEach((m,i)=>{
+      const el=document.createElement("div"); el.className="match"+(m.mine?" you-here":"")+(m.winner?" done":"");
+      const res=m.winner?` — ${m.winner.f} ✓`:(i===TY.qi?' — als Nächstes':'');
+      el.innerHTML=`<span class="side">${m.a.f} ${m.a.n}</span><span class="vs">vs</span><span class="side" style="justify-content:flex-end;flex:1">${m.b.n} ${m.b.f}</span>`;
+      if(m.winner){const s=document.createElement("span"); s.style.cssText="color:var(--grass);font-weight:800;font-size:11px;margin-left:6px"; s.textContent=m.winner.f; el.appendChild(s);}
+      bc.appendChild(el);
+    });
+    const btn=$("#tyPlay");
+    const next=TY.queue[TY.qi];
+    btn.style.display="block"; btn.disabled=false;
+    btn.textContent = next ? (next.mine?"⚽ DEIN Spiel: "+next.b.n:"Spiel: "+next.a.n+" vs "+next.b.n) : "Runde fertig ▶";
   }
   $("#tyPlay").addEventListener("click",()=>{
-    const alive=TY.alive.slice(), myIdx=alive.indexOf(TY.myTeam.n), pairIdx=myIdx%2===0?myIdx+1:myIdx-1;
-    const opp=TY.field.find(f=>f.n===alive[pairIdx]);
-    startShootout(opp.n,{rounds:5,title:ROUND_NAMES[TY.round],youName:TY.myTeam.n,onEnd(win){tourneyResult(win,opp);}});
+    const m=TY.queue[TY.qi];
+    if(!m){ nextRound(); return; }
+    startMatch(m.a, m.b, {
+      title:roundName(), tag:m.mine?"DEIN SPIEL · "+roundName():roundName(), nextLabel:"Weiter zum Bracket",
+      onEnd(win){
+        m.winner = win? m.a : m.b;
+        if(m.mine && m.winner.n!==TY.myTeam.n){ addCoins(20); S.streak=0; save(); toast("Ausgeschieden im "+roundName()+". +20 🪙"); renderHome(); go("home"); return; }
+        if(m.mine){ addCoins(50); S.streak++; toast("Weiter! +50 🪙"); } else { addCoins(6); }
+        TY.qi++; save(); go("tourney"); renderBracket();
+      }
+    });
   });
-  function tourneyResult(win){
-    if(!win){addCoins(20); S.streak=0; save(); toast("Ausgeschieden im "+ROUND_NAMES[TY.round]+". +20 🪙"); renderHome(); go("home"); return;}
-    addCoins(60); S.streak++;
-    const alive=TY.alive.slice(), winners=[];
-    for(let i=0;i<alive.length;i+=2){const a=alive[i],b=alive[i+1]; if(a===TY.myTeam.n){winners.push(a);continue;} if(b===TY.myTeam.n){winners.push(b);continue;} winners.push(Math.random()<0.5?a:b);}
+  function nextRound(){
+    const winners=TY.queue.map(m=>m.winner);
     TY.alive=winners; TY.round++;
-    if(TY.alive.length===1){
-      S.titles++; const bonus=350; addCoins(bonus);
-      const missing=ROSTER.filter(c=>!owned(c.id)); const card=(missing.length?missing:ROSTER)[Math.floor(Math.random()*(missing.length?missing.length:ROSTER.length))];
-      give(card.id); const nb=checkNatBonus(); save();
-      $("#pnResult").style.display="none"; go("tourney"); $("#tyBoard").style.display="block"; $("#tyPick").style.display="none";
-      $("#tyBracket").innerHTML=`<div class="center" style="padding:12px">
-        <div style="font-size:56px">🏆</div>
-        <div style="font-weight:900;font-size:22px;text-transform:uppercase;margin:6px 0">${TY.mode}-Titel!</div>
-        <div class="sub">${TY.myTeam.f} ${TY.myTeam.n} ist ${TY.mode==="WM"?"Weltmeister":"Europameister"}!</div>
-        <div style="margin:10px 0 4px;font-weight:800;color:var(--gold)">+${bonus} 🪙 · Bonuskarte fürs Album:</div>
-        <div style="max-width:150px;margin:8px auto">${cardHTML(card)}</div></div>`;
-      $("#tyRound").textContent="Champion"; $("#tyPlay").style.display="none";
-      toast("🏆 "+TY.mode+"-Titel! +"+bonus+" 🪙"); renderCoins(); return;
-    }
-    save(); toast("Weiter! +60 🪙 · "+ROUND_NAMES[TY.round]); go("tourney"); renderBracket();
+    if(TY.alive.length===1){ champion(); return; }
+    buildQueue(); renderBracket(); toast(roundName()+"!");
+  }
+  function champion(){
+    S.titles++; const bonus=350; addCoins(bonus);
+    const missing=ROSTER.filter(c=>!owned(c.id)); const card=(missing.length?missing:ROSTER)[Math.floor(Math.random()*(missing.length?missing.length:ROSTER.length))];
+    give(card.id); checkNatBonus(); save();
+    go("tourney"); $("#tyBoard").style.display="block"; $("#tyPick").style.display="none";
+    $("#tyBracket").innerHTML=`<div class="center" style="padding:12px">
+      <div style="font-size:56px">🏆</div>
+      <div style="font-weight:900;font-size:22px;text-transform:uppercase;margin:6px 0">${TY.mode}-Titel!</div>
+      <div class="sub">${TY.myTeam.f} ${TY.myTeam.n} ist ${TY.mode==="WM"?"Weltmeister":"Europameister"}!</div>
+      <div style="margin:10px 0 4px;font-weight:800;color:var(--gold)">+${bonus} 🪙 · Bonuskarte fürs Album:</div>
+      <div style="max-width:150px;margin:8px auto">${cardHTML(card)}</div></div>`;
+    $("#tyRound").textContent="Champion"; $("#tyPlay").style.display="none";
+    toast("🏆 "+TY.mode+"-Titel! +"+bonus+" 🪙"); renderCoins();
   }
 
-  /* PACKS */
+  /* ---- PACKS ---- */
   const drawCard=()=>ROSTER[Math.floor(Math.random()*ROSTER.length)];
   $("#buyPack").addEventListener("click",()=>{
     if(S.coins<120){toast("Nicht genug Coins – gewinne Spiele!"); return;}
     addCoins(-120);
     const stage=$("#packStage"); stage.innerHTML=""; $("#packHint").textContent="";
-    let newCount=0;
-    const drawn=[drawCard(),drawCard(),drawCard()];
+    let newCount=0; const drawn=[drawCard(),drawCard(),drawCard()];
     drawn.forEach((c,i)=>{
       const isNew=owned(c.id)===0; give(c.id); if(isNew) newCount++;
       const div=document.createElement("div"); div.innerHTML=cardHTML(c,"reveal");
@@ -448,29 +579,24 @@
       stage.appendChild(el);
     });
     const nb=checkNatBonus(); save();
-    setTimeout(()=>{
-      let msg = newCount? `⭐ ${newCount} neue Karte${newCount>1?"n":""} fürs Album!` : "Alles Doppelte – Pech gehabt!";
-      if(nb) msg=`🎉 ${nb} komplett! +100 🪙 Bonus`;
-      $("#packHint").innerHTML=msg;
-    },1000);
+    setTimeout(()=>{ let msg=newCount?`⭐ ${newCount} neue Karte${newCount>1?"n":""} fürs Album!`:"Alles Doppelte – Pech gehabt!"; if(nb) msg=`🎉 ${nb} komplett! +100 🪙 Bonus`; $("#packHint").innerHTML=msg; },1000);
     renderHome();
   });
 
-  /* BOOK — album by nation */
+  /* ---- BOOK ---- */
   function renderBook(filter){
     $("#bkOwned").textContent=ownedCount(); $("#bkTotal").textContent=ROSTER.length;
     $("#bkNat").textContent=natDoneCount(); $("#bkNatT").textContent=NATLIST.length;
     const wrap=$("#bookAlbum"); wrap.innerHTML="";
     NATIONS.forEach(nat=>{
-      const cards=natCards(nat.n);
-      const have=cards.filter(c=>owned(c.id)).length;
+      const cards=natCards(nat.n); const have=cards.filter(c=>owned(c.id)).length;
       let show=cards;
       if(filter==="owned") show=cards.filter(c=>owned(c.id));
       else if(filter==="missing") show=cards.filter(c=>!owned(c.id));
       if(!show.length) return;
       const done=have===cards.length;
-      const sec=document.createElement("div"); sec.className="natsec"+(done?" done":"");
-      sec.innerHTML=`<div class="h"><span class="fl">${nat.f}</span><span class="name">${nat.n}</span><span class="pg ${done?"done":""}">${have}/${cards.length}</span></div>`;
+      const sec=document.createElement("div"); sec.className="natsec";
+      sec.innerHTML=`<div class="h"><span class="fl">${nat.f}</span><span class="name">${nat.n}${done?" ✓":""}</span><span class="pg ${done?"done":""}">${have}/${cards.length}</span></div>`;
       const row=document.createElement("div"); row.className="cardrow";
       show.forEach(c=>{
         const has=owned(c.id); const div=document.createElement("div");
