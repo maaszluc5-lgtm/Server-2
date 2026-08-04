@@ -642,13 +642,18 @@
       if(pressd&&Math.random()<0.07){ const t=bestPass(p); if(t>=0){ passBall(p,E.players[t]); return; } }
       const dx=goalX-p.x,dy=goalY-p.y,d=Math.hypot(dx,dy)||1; seek(p,p.x+dx/d*130,p.y+dy/d*130,SPD*0.94*ratf(p)*spdM); }
 
-    function ai(){ const B=E.players,P=E.players,ball=E.ball; const owner=ball.owner; const posTeam=owner>=0?P[owner].t:null;
-      let nY=-1,nO=-1,dY=1e18,dO=1e18; for(let i=0;i<P.length;i++){ const p=P[i]; const dx=p.x-ball.x,dy=p.y-ball.y,d=dx*dx+dy*dy; if(p.t==="you"){if(d<dY){dY=d;nY=i;}}else{if(d<dO){dO=d;nO=i;}} }
+    function ai(){ const P=E.players,ball=E.ball; const owner=ball.owner; const posTeam=owner>=0?P[owner].t:null;
+      const near={you:[],opp:[]};
+      for(let i=0;i<P.length;i++){ const p=P[i]; if(p.role==="GK")continue; const dx=p.x-ball.x,dy=p.y-ball.y; near[p.t].push([dx*dx+dy*dy,i]); }
+      near.you.sort((a,b)=>a[0]-b[0]); near.opp.sort((a,b)=>a[0]-b[0]);
+      const nY=near.you[0]?near.you[0][1]:-1, nO=near.opp[0]?near.opp[0][1]:-1;
+      const chase=new Set(); ["you","opp"].forEach(t=>{ const arr=near[t], n=(posTeam!==t)?2:1; for(let k=0;k<n&&k<arr.length;k++) chase.add(arr[k][1]); });
       for(let i=0;i<P.length;i++){ const p=P[i]; if(i===E.active)continue; if(E.net&&E.net.role==='host'&&i===E.guestActive)continue; if(p.role==="GK"){gkAI(p);continue;} if(owner===i){ownerAI(p,nY,nO);continue;}
-        const teamHasBall=posTeam===p.t; const chaser=p.t==="you"?nY:nO; const tgtGoalY=p.t==="you"?MG:(H-MG); const ownGoalY=p.t==="you"?(H-MG):MG;
-        const sm=p.t==="opp"?(1+(E.diff-1)*0.05):1; let tx,ty,s=SPD*0.84*ratf(p)*sm;
-        if(!teamHasBall&&i===chaser){ tx=ball.x; ty=ball.y; s=SPD*ratf(p)*sm; }
-        else { const shx=(ball.x-W/2)*0.35; let hy=p.hy; if(teamHasBall) hy+=(tgtGoalY-p.hy)*0.20; else hy+=(ownGoalY-p.hy)*0.10; tx=clampw(p.hx+shx,22,W-22); ty=clampw(hy,MG+8,H-MG-8); }
+        const teamHasBall=posTeam===p.t; const tgtGoalY=p.t==="you"?MG:(H-MG); const ownGoalY=p.t==="you"?(H-MG):MG;
+        const sm=p.t==="opp"?(1+(E.diff-1)*0.05):1; let tx,ty,s;
+        if(!teamHasBall&&chase.has(i)){ tx=ball.x; ty=ball.y; s=SPD*1.02*ratf(p)*sm; }
+        else if(teamHasBall&&chase.has(i)){ tx=clampw(ball.x+(i%2?70:-70),22,W-22); ty=clampw(ball.y+(tgtGoalY-ball.y)*0.4,MG+8,H-MG-8); s=SPD*0.85*ratf(p)*sm; }
+        else { const shx=(ball.x-W/2)*0.42; let hy=p.hy; if(teamHasBall) hy+=(tgtGoalY-p.hy)*0.26; else hy+=(ownGoalY-p.hy)*0.13; tx=clampw(p.hx+shx,22,W-22); ty=clampw(hy,MG+8,H-MG-8); s=SPD*0.78*ratf(p)*sm; }
         seek(p,tx,ty,s); } }
 
     function step(dt){
@@ -669,6 +674,8 @@
       for(const p of P){ p.x=clampw(p.x+p.vx*dt,10,W-10); p.y=clampw(p.y+p.vy*dt,10,H-10); const sp=Math.hypot(p.vx,p.vy); if(sp>14){p.fdx=p.vx/sp;p.fdy=p.vy/sp;} }
       if(B.owner>=0){ const o=P[B.owner]; let fx=o.fdx,fy=o.fdy; const fl=Math.hypot(fx,fy)||1; B.x=clampw(o.x+fx/fl*19,6,W-6); B.y=clampw(o.y+fy/fl*19,6,H-6); B.vx=o.vx;B.vy=o.vy; }
       else { B.x+=B.vx*dt; B.y+=B.vy*dt; const f=Math.pow(0.13,dt); B.vx*=f; B.vy*=f; if(Math.hypot(B.vx,B.vy)<6){B.vx=0;B.vy=0;} }
+      if(B.owner>=0){ const carrier=P[B.owner]; for(let i=0;i<P.length;i++){ const p=P[i]; if(p.t===carrier.t||p.role==="GK")continue; if(i===E.active)continue; if(net&&net.role==='host'&&i===E.guestActive)continue;
+        if(dist(p,B)<19){ const pr=(0.9+(p.rating-72)/45)*(p.t==="opp"?(1+(E.diff-1)*0.6):1)*dt; if(Math.random()<pr){ B.owner=i; B.lastTouch=p.t; B.vx=0;B.vy=0; break; } } } }
       ref(); clock(dt);
     }
 
