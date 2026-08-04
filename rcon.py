@@ -41,7 +41,8 @@ def read_packet(sock):
     return pid, ptype, data[8:-2].decode("utf-8", "replace")
 
 try:
-    s = socket.create_connection((HOST, PORT), timeout=10)
+    s = socket.create_connection((HOST, PORT), timeout=60)
+    s.settimeout(60)
 except Exception as e:
     print("Keine RCON-Verbindung zu %s:%d – ist enable-rcon=true und der Server gestartet? (%s)" % (HOST, PORT, e))
     sys.exit(1)
