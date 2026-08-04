@@ -546,8 +546,9 @@
 
   const PITCH=(function(){
     const cv=$("#ptCanvas"), ctx=cv.getContext("2d");
-    const W=680,H=1040,MG=26,GOALW=150,POSTL=(W-GOALW)/2,POSTR=(W+GOALW)/2,SPD=150;
+    const W=680,H=1040,MG=26,GOALW=150,POSTL=(W-GOALW)/2,POSTR=(W+GOALW)/2,SPD=75;
     const CAMH=60,CAMBACK=112,NEAR=16;
+    const RUN=75, SPRINT=98;
     let E=null, raf=0, last=0, inited=false;
     const IN={dx:0,dy:0,sprint:false};
     const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
@@ -627,7 +628,7 @@
       } else if(kind==="shoot"){
         if(hasBall){ const dir=sd||[0,-1]; shootBall(a, a.x+dir[0]*420, a.y+dir[1]*420); banner("SCHUSS!",0); setTimeout(()=>{if(E&&!E.dead)hideBanner();},500); }
       } else if(kind==="tackle"){
-        const dx=B.x-a.x,dy=B.y-a.y,d=Math.hypot(dx,dy)||1; a.vx=dx/d*300; a.vy=dy/d*300;
+        const dx=B.x-a.x,dy=B.y-a.y,d=Math.hypot(dx,dy)||1; a.vx=dx/d*160; a.vy=dy/d*160;
         if(B.owner>=0&&P[B.owner].t!==a.t&&d<46){ const ch=0.5+(a.rating-72)/110; if(Math.random()<ch){ B.owner=idx; B.lastTouch=a.t; B.vx=0;B.vy=0; banner("BALL WEG! ⚡",0); setTimeout(()=>{if(E&&!E.dead)hideBanner();},500); } }
       }
     }
@@ -664,12 +665,12 @@
       const net=E.net;
       if(B.owner>=0&&P[B.owner].t==="you"&&!(net&&net.mode==='coop'&&B.owner===E.guestActive)) E.active=B.owner;
       else { let nn=-1,nd=1e9; for(let i=0;i<11;i++){ if(P[i].role==="GK"&&!(B.owner<0&&B.y>H-MG-140))continue; if(net&&net.mode==='coop'&&i===E.guestActive)continue; const d=dist(P[i],B); if(d<nd){nd=d;nn=i;} } if(nn>=0)E.active=nn; }
-      const a=P[E.active]; if(a){ const mag=Math.hypot(IN.dx,IN.dy); if(mag>0.12){ const fwd=-IN.dy,strafe=IN.dx, rx=-E.aimy,ry=E.aimx; let dxw=E.aimx*fwd+rx*strafe, dyw=E.aimy*fwd+ry*strafe; const dl=Math.hypot(dxw,dyw)||1; const s=(IN.sprint?196:150)*ratf(a)*Math.min(1,mag/0.85); a.vx=dxw/dl*s; a.vy=dyw/dl*s; } else { a.vx*=0.55; a.vy*=0.55; } }
+      const a=P[E.active]; if(a){ const mag=Math.hypot(IN.dx,IN.dy); if(mag>0.12){ const fwd=-IN.dy,strafe=IN.dx, rx=-E.aimy,ry=E.aimx; let dxw=E.aimx*fwd+rx*strafe, dyw=E.aimy*fwd+ry*strafe; const dl=Math.hypot(dxw,dyw)||1; const s=(IN.sprint?SPRINT:RUN)*ratf(a)*Math.min(1,mag/0.85); a.vx=dxw/dl*s; a.vy=dyw/dl*s; } else { a.vx*=0.55; a.vy*=0.55; } }
       if(a&&B.owner===E.active){ const mag=Math.hypot(IN.dx,IN.dy); if(mag>0.15){ const fwd=-IN.dy,strafe=IN.dx,rx=-E.aimy,ry=E.aimx; let dx=E.aimx*fwd+rx*strafe,dy=E.aimy*fwd+ry*strafe; const dl=Math.hypot(dx,dy)||1; E.shotDir=[dx/dl,dy/dl]; } else { const gx=W/2-a.x,gy=MG-a.y,dl=Math.hypot(gx,gy)||1; E.shotDir=[gx/dl,gy/dl]; } }
       if(net&&net.role==='host'){
         if(net.mode==='vs'){ if(B.owner>=0&&P[B.owner].t==="opp") E.guestActive=B.owner; else { let nn=-1,nd=1e9; for(let i=11;i<22;i++){ if(P[i].role==="GK")continue; const d=dist(P[i],B); if(d<nd){nd=d;nn=i;} } if(nn>=0)E.guestActive=nn; } }
         else { if(B.owner>=0&&P[B.owner].t==="you"&&B.owner!==E.active) E.guestActive=B.owner; else { let nn=-1,nd=1e9; for(let i=0;i<11;i++){ if(i===E.active||P[i].role==="GK")continue; const d=dist(P[i],B); if(d<nd){nd=d;nn=i;} } if(nn>=0)E.guestActive=nn; } }
-        const g=P[E.guestActive], RI=E.remoteIn; if(g&&RI){ const mag=RI.mag||0; if(mag>0.12){ const s=(RI.sp?196:150)*ratf(g)*Math.min(1,mag/0.85); g.vx=RI.mv[0]*s; g.vy=RI.mv[1]*s; } else { g.vx*=0.55; g.vy*=0.55; } }
+        const g=P[E.guestActive], RI=E.remoteIn; if(g&&RI){ const mag=RI.mag||0; if(mag>0.12){ const s=(RI.sp?SPRINT:RUN)*ratf(g)*Math.min(1,mag/0.85); g.vx=RI.mv[0]*s; g.vy=RI.mv[1]*s; } else { g.vx*=0.55; g.vy*=0.55; } }
       }
       ai();
       for(const p of P){ p.x=clampw(p.x+p.vx*dt,10,W-10); p.y=clampw(p.y+p.vy*dt,10,H-10); const sp=Math.hypot(p.vx,p.vy); if(sp>14){p.fdx=p.vx/sp;p.fdy=p.vy/sp;} }
