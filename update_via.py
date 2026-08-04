@@ -38,7 +38,12 @@ def download(url, dest):
 def main():
     if not os.path.isdir(PLUGINS):
         print("Plugins-Ordner nicht gefunden:", PLUGINS); sys.exit(1)
-    for slug, jar in (("viaversion", "ViaVersion.jar"), ("viabackwards", "ViaBackwards.jar")):
+    mapping = {"viaversion": "ViaVersion.jar", "viabackwards": "ViaBackwards.jar"}
+    wanted = [a.lower() for a in sys.argv[1:]] or ["viaversion", "viabackwards"]
+    todo = [(s, mapping[s]) for s in wanted if s in mapping]
+    if not todo:
+        print("Unbekanntes Ziel. Nutze: viaversion und/oder viabackwards"); sys.exit(1)
+    for slug, jar in todo:
         print("== %s ==" % slug)
         try:
             vnum, url, fname = latest(slug)
