@@ -80,7 +80,7 @@
 <script>
 (function(){
   var $=function(s){return document.querySelector(s);};
-  var ws=null, term=null, fit=null, connected=false;
+  var ws=null, term=null, fit=null, connected=false, savedPass='';
   function wsUrl(){ return (location.protocol==='https:'?'wss':'ws')+'://'+location.host+'/term'; }
 
   function showStep(n){
@@ -89,35 +89,43 @@
     if(n===2){ setTimeout(function(){ $('#code').focus(); }, 50); }
   }
 
-  $('#go').addEventListener('click', connect);
-  $('#pw').addEventListener('keydown', function(e){ if(e.key==='Enter') connect(); });
-  $('#goCode').addEventListener('click', sendCode);
-  $('#code').addEventListener('keydown', function(e){ if(e.key==='Enter') sendCode(); });
+  $('#go').addEventListener('click', requestCode);
+  $('#pw').addEventListener('keydown', function(e){ if(e.key==='Enter') requestCode(); });
+  $('#goCode').addEventListener('click', verifyCode);
+  $('#code').addEventListener('keydown', function(e){ if(e.key==='Enter') verifyCode(); });
   $('#back').addEventListener('click', function(){ try{ws&&ws.close();}catch(_){}; showStep(1); $('#err').textContent=''; });
 
-  function connect(){
-    var pass=$('#pw').value; if(!pass){ $('#err').textContent='Bitte Passwort eingeben'; return; }
+  // Schritt 1: Passwort -> Code anfordern. Diese Verbindung wird danach geschlossen.
+  function requestCode(){
+    savedPass=$('#pw').value; if(!savedPass){ $('#err').textContent='Bitte Passwort eingeben'; return; }
     $('#err').textContent='Prüfe…';
-    try{ ws=new WebSocket(wsUrl()); }catch(e){ $('#err').textContent='Verbindung fehlgeschlagen'; return; }
-    ws.onopen=function(){ ws.send(JSON.stringify({t:'auth',pass:pass,cols:80,rows:24})); };
-    ws.onmessage=function(ev){ var m; try{m=JSON.parse(ev.data);}catch(_){return;}
-      if(m.t==='denied'){ $('#err').textContent='Falsches Passwort'; showStep(1); try{ws.close();}catch(_){}
-      } else if(m.t==='code'){ $('#err').textContent=''; $('#err2').textContent=''; $('#code').value=''; showStep(2);
-      } else if(m.t==='mailerr'){ $('#err').textContent=m.msg||'Code konnte nicht gesendet werden'; showStep(1);
-      } else if(m.t==='codebad'){ $('#err2').textContent=m.msg||'Falscher Code'; $('#code').value=''; $('#code').focus();
-      } else if(m.t==='ok'){ startTerm(); }
-      else if(m.t==='out'){ if(term) term.write(m.d); }
-      else if(m.t==='exit'){ setStatus(false,'Shell beendet'); }
+    var s; try{ s=new WebSocket(wsUrl()); }catch(e){ $('#err').textContent='Verbindung fehlgeschlagen'; return; }
+    s.onopen=function(){ s.send(JSON.stringify({t:'auth',pass:savedPass})); };
+    s.onmessage=function(ev){ var m; try{m=JSON.parse(ev.data);}catch(_){return;}
+      if(m.t==='denied'){ $('#err').textContent='Falsches Passwort'; showStep(1); try{s.close();}catch(_){}
+      } else if(m.t==='code'){ $('#err').textContent=''; $('#err2').textContent=''; $('#code').value=''; showStep(2); try{s.close();}catch(_){}
+      } else if(m.t==='mailerr'){ $('#err').textContent=m.msg||'Code konnte nicht gesendet werden'; showStep(1); try{s.close();}catch(_){}
+      } else if(m.t==='ok'){ ws=s; startTerm(); }  // nur falls Mail aus ist
     };
-    ws.onclose=function(){ if(!connected && document.querySelector('.step2').style.display==='none'){} setStatus(false,'getrennt'); };
-    ws.onerror=function(){ $('#err').textContent='Server nicht erreichbar'; };
+    s.onerror=function(){ $('#err').textContent='Server nicht erreichbar'; };
   }
 
-  function sendCode(){
+  // Schritt 2: Code prüfen mit FRISCHER Verbindung – die wird dann das Terminal.
+  function verifyCode(){
     var c=$('#code').value.replace(/\s+/g,''); if(!c){ $('#err2').textContent='Bitte Code eingeben'; return; }
-    if(!ws||ws.readyState!==1){ $('#err2').textContent='Verbindung verloren – bitte zurück und neu.'; return; }
     $('#err2').textContent='Prüfe…';
-    ws.send(JSON.stringify({t:'code',code:c}));
+    var s; try{ s=new WebSocket(wsUrl()); }catch(e){ $('#err2').textContent='Verbindung fehlgeschlagen'; return; }
+    ws=s;
+    s.onopen=function(){ s.send(JSON.stringify({t:'verify',pass:savedPass,code:c,cols:80,rows:24})); };
+    s.onmessage=function(ev){ var m; try{m=JSON.parse(ev.data);}catch(_){return;}
+      if(m.t==='ok'){ startTerm(); }
+      else if(m.t==='codebad'){ $('#err2').textContent=m.msg||'Falscher Code'; $('#code').value=''; $('#code').focus(); try{s.close();}catch(_){}
+      } else if(m.t==='denied'){ $('#err2').textContent='Zu viele Versuche – bitte neu anmelden'; showStep(1); try{s.close();}catch(_){}
+      } else if(m.t==='out'){ if(term) term.write(m.d); }
+      else if(m.t==='exit'){ setStatus(false,'Shell beendet'); }
+    };
+    s.onclose=function(){ if(connected) setStatus(false,'getrennt'); };
+    s.onerror=function(){ $('#err2').textContent='Server nicht erreichbar'; };
   }
 
   function startTerm(){

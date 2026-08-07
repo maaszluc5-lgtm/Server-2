@@ -47,10 +47,16 @@ function sendCode(code, ip) {
     to: CODE_TO,
     subject: 'Terminal-Code: ' + code,
     text: 'Dein Login-Code fuer das Server-Terminal: ' + code + '\n\n'
-        + 'Gueltig 5 Minuten. Anfrage von IP ' + (ip || '?') + '.\n'
+        + 'Gueltig 10 Minuten. Anfrage von IP ' + (ip || '?') + '.\n'
         + 'Wenn du dich nicht gerade einloggst, ignoriere diese Mail und aendere dein Passwort.'
   });
 }
+
+// Code wird SERVERSEITIG gehalten (nicht pro Verbindung), damit man zwischendurch
+// zur Mail-App wechseln darf, ohne dass die Anmeldung abbricht.
+const CODE_TTL = 10 * 60 * 1000;   // 10 Minuten gueltig
+const RESEND_GAP = 20 * 1000;      // fruehestens alle 20s neu mailen
+let pending = null;                // { code, exp, tries, lastSent }
 
 const MIME = { '.html':'text/html; charset=utf-8', '.js':'text/javascript', '.css':'text/css' };
 const server = http.createServer((req, res) => {
@@ -71,32 +77,42 @@ const send = (ws, o) => { try { ws.send(JSON.stringify(o)); } catch (e) {} };
 wss.on('connection', (ws, req) => {
   const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket.remoteAddress || '?';
   let authed = false, shell = null, usingPty = false;
-  let passOk = false, code = null, codeExp = 0, tries = 0, cols = 80, rows = 24;
   const kill = () => { try { if (shell) usingPty ? shell.kill() : shell.kill('SIGHUP'); } catch (e) {} shell = null; };
 
   ws.on('message', (buf) => {
     let m; try { m = JSON.parse(buf.toString()); } catch (e) { return; }
 
     if (!authed) {
-      // Schritt 1: Passwort
+      // Schritt 1: Passwort -> Code anfordern (Code liegt serverseitig, Verbindung darf danach abbrechen)
       if (m.t === 'auth') {
         if (m.pass !== PASS) { send(ws, { t: 'denied' }); setTimeout(() => { try { ws.close(); } catch (e) {} }, 400); return; }
-        cols = m.cols || 80; rows = m.rows || 24;
-        if (!MAIL_ON) { authed = true; send(ws, { t: 'ok', pty: !!pty, shell: SHELL }); start(cols, rows); return; }
-        passOk = true; code = newCode(); codeExp = Date.now() + 5 * 60 * 1000; tries = 0;
-        sendCode(code, ip)
-          .then(() => send(ws, { t: 'code' }))
-          .catch((err) => { console.error('Mail-Fehler:', err.message); passOk = false; code = null; send(ws, { t: 'mailerr', msg: 'Code konnte nicht gesendet werden. Spaeter erneut versuchen.' }); });
+        if (!MAIL_ON) { authed = true; send(ws, { t: 'ok', pty: !!pty, shell: SHELL }); start(m.cols || 80, m.rows || 24); return; }
+        const now = Date.now();
+        if (pending && now < pending.exp) {
+          // gueltiger Code existiert schon: hoechstens alle 20s neu mailen, sonst nur weiter
+          if (now - pending.lastSent > RESEND_GAP) {
+            pending.lastSent = now;
+            sendCode(pending.code, ip).catch((e) => console.error('Mail-Fehler:', e.message));
+          }
+          send(ws, { t: 'code' });
+        } else {
+          const c = newCode();
+          pending = { code: c, exp: now + CODE_TTL, tries: 0, lastSent: now };
+          sendCode(c, ip)
+            .then(() => send(ws, { t: 'code' }))
+            .catch((err) => { console.error('Mail-Fehler:', err.message); pending = null; send(ws, { t: 'mailerr', msg: 'Code konnte nicht gesendet werden. Spaeter erneut versuchen.' }); });
+        }
         return;
       }
-      // Schritt 2: Mail-Code
-      if (m.t === 'code' && passOk) {
-        if (!code || Date.now() > codeExp) { passOk = false; code = null; send(ws, { t: 'codebad', msg: 'Code abgelaufen – bitte neu anmelden.' }); return; }
-        if (++tries > 5) { send(ws, { t: 'denied' }); setTimeout(() => { try { ws.close(); } catch (e) {} }, 400); return; }
-        if (String(m.code || '').replace(/\s+/g, '') !== code) { send(ws, { t: 'codebad', msg: 'Falscher Code (' + (6 - tries) + ' Versuche uebrig).' }); return; }
-        authed = true; code = null; passOk = false;
+      // Schritt 2: Passwort + Code pruefen (frische Verbindung) -> DIESE Verbindung wird das Terminal
+      if (m.t === 'verify') {
+        if (m.pass !== PASS) { send(ws, { t: 'denied' }); setTimeout(() => { try { ws.close(); } catch (e) {} }, 400); return; }
+        if (!pending || Date.now() > pending.exp) { pending = null; send(ws, { t: 'codebad', msg: 'Code abgelaufen – bitte neu anmelden.' }); return; }
+        if (++pending.tries > 6) { pending = null; send(ws, { t: 'denied' }); setTimeout(() => { try { ws.close(); } catch (e) {} }, 400); return; }
+        if (String(m.code || '').replace(/\s+/g, '') !== pending.code) { send(ws, { t: 'codebad', msg: 'Falscher Code (' + (7 - pending.tries) + ' Versuche uebrig).' }); return; }
+        pending = null; authed = true;
         send(ws, { t: 'ok', pty: !!pty, shell: SHELL });
-        start(cols, rows);
+        start(m.cols || 80, m.rows || 24);
         return;
       }
       return;
