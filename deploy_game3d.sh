@@ -18,9 +18,10 @@ echo "== 3/5  neue Spielseite holen =="
 curl -fsSL "$BASE/index.html" -o index.html
 echo "   index.html: $(du -h index.html | cut -f1)"
 
-echo "== 4/5  Menschmodell holen (2 MB, nur beim ersten Mal) =="
-curl -fsSL "$BASE/Soldier.glb" -o Soldier.glb
-echo "   Soldier.glb: $(du -h Soldier.glb | cut -f1)"
+echo "== 4/5  Menschmodell holen (~3 MB) =="
+curl -fsSL "$BASE/Xbot.glb" -o Xbot.glb
+echo "   Xbot.glb: $(du -h Xbot.glb | cut -f1)"
+rm -f Soldier.glb 2>/dev/null || true
 
 echo "== 5/5  torjaeger neu starten =="
 pm2 restart torjaeger --update-env
