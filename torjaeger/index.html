@@ -709,6 +709,13 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
       }
       function resize(){ if(!R)return; const w=cv.clientWidth||cv.width, h=cv.clientHeight||cv.height; if(!w||!h)return; R.setSize(w,h,false); cam.aspect=w/h; cam.updateProjectionMatrix(); }
       function col(t){ try{ return new THREE.Color(t&&t.c?t.c:'#dddddd'); }catch(e){ return new THREE.Color(0xdddddd); } }
+      const KITS=[0xf5f5f5,0xd42a2a,0x2246cc,0xf2c400,0x17171b,0x1f8f4d,0xe07b00,0x8e3bd0];
+      function cdist(a,b){ const dr=a.r-b.r,dg=a.g-b.g,db=a.b-b.b; return Math.sqrt(dr*dr+dg*dg+db*db); }
+      // Gegner bekommt Auswaertstrikot, wenn Farbe zu nah an deiner ist (auch nicht Torwart-Gelb)
+      function contrastKit(youC,oppC){ if(cdist(youC,oppC)>=0.40) return oppC;
+        const gk=new THREE.Color(0xffd23d); let best=oppC,bd=-1;
+        for(const k of KITS){ const c=new THREE.Color(k); const d=Math.min(cdist(c,youC),cdist(c,gk)*1.4); if(d>bd){bd=d;best=c;} }
+        return best; }
       function code3(t){ if(!t||!t.n)return '???'; return t.n.replace(/[^A-Za-zÀ-ÿ]/g,'').slice(0,3).toUpperCase(); }
       function sync(E){ if(!ready){init(); if(!ready)return;}
         const now=performance.now(); let dt=_lt?(now-_lt)/1000:0.016; _lt=now; if(dt>0.06)dt=0.06;
@@ -717,7 +724,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
         if((E.os||0)>prevOs){ celebTeam='opp'; celebT=now+2600; celebAng=0; }
         prevYs=E.ys||0; prevOs=E.os||0;
         const celeb = now<celebT;
-        const youC=col(E.you),oppC=col(E.opp),gkC=new THREE.Color(0xffd23d);
+        const youC=col(E.you); let oppC=col(E.opp); oppC=contrastKit(youC,oppC); const gkC=new THREE.Color(0xffd23d);
         for(let i=0;i<22;i++){ const gp=pool[i], p=E.players[i]; if(!p){gp.visible=false;continue;} gp.visible=true;
           gp.position.set(p.x,0,p.y);
           const spd=Math.hypot(p.vx||0,p.vy||0); let fx=p.vx,fy=p.vy; if(spd<3){fx=p.fdx;fy=p.fdy;}
