@@ -1,5 +1,5 @@
 #!/bin/bash
-# Spielt die 3D-Version des Fussball-Spiels mit ECHTEN Menschmodellen ein und startet torjaeger neu.
+# Spielt das 3D-Fussball-Spiel (echte Menschmodelle) + Konten-Login ein und startet torjaeger neu.
 set -e
 BASE=https://raw.githubusercontent.com/maaszluc5-lgtm/Server-2/claude/ssh-connection-setup-eotr6i/torjaeger
 
@@ -11,21 +11,25 @@ if [ ! -d "$DIR" ]; then echo "   FEHLER: Ordner nicht gefunden ($DIR)"; exit 1;
 echo "   Ordner: $DIR"
 cd "$DIR"
 
-echo "== 2/5  alte index.html sichern =="
-if [ -f index.html ]; then cp -a index.html "index.html.bak.$(date +%s)"; echo "   Backup angelegt."; fi
+echo "== 2/5  alte Dateien sichern =="
+ts=$(date +%s)
+[ -f index.html ] && cp -a index.html "index.html.bak.$ts"
+[ -f server.js ] && cp -a server.js "server.js.bak.$ts"
+echo "   Backups .bak.$ts"
 
-echo "== 3/5  neue Spielseite holen =="
+echo "== 3/5  neue Spielseite + Server holen =="
 curl -fsSL "$BASE/index.html" -o index.html
 echo "   index.html: $(du -h index.html | cut -f1)"
+curl -fsSL "$BASE/server.js" -o server.js
+echo "   server.js aktualisiert (mit Konten-Login)"
 
-echo "== 4/5  Menschmodell holen (~3 MB) =="
-curl -fsSL "$BASE/Xbot.glb" -o Xbot.glb
-echo "   Xbot.glb: $(du -h Xbot.glb | cut -f1)"
-rm -f Soldier.glb 2>/dev/null || true
+echo "== 4/5  Menschmodell (nur falls es fehlt) =="
+if [ ! -f Xbot.glb ]; then curl -fsSL "$BASE/Xbot.glb" -o Xbot.glb; echo "   Xbot.glb geladen ($(du -h Xbot.glb | cut -f1))"; else echo "   Xbot.glb schon da"; fi
 
 echo "== 5/5  torjaeger neu starten =="
 pm2 restart torjaeger --update-env
 sleep 1
+pm2 logs torjaeger --nostream --lines 4 | grep -i "server on" || true
 echo ""
 echo "FERTIG! Oeffne dein Spiel neu:  https://bestfussball.duckdns.org"
-echo "WICHTIG: Seite HART neu laden (Cache leeren). Beim ersten Start laedt das Modell kurz (~2 MB)."
+echo "WICHTIG: Seite HART neu laden. Oben rechts ist jetzt der Knopf 'Anmelden'."

@@ -4103,7 +4103,7 @@ three/build/three.module.js:
   if(S.diff===undefined) S.diff=1;
   const DIFFS=["Leicht","Normal","Schwer","Profi"], DMULT=[0.7,1,1.6,2.5];
   const gcoin=n=>Math.round(n*DMULT[S.diff||1]);
-  function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){} if(window.__ACCT)window.__ACCT.queue();}
   const owned=id=>S.coll[id]||0;
   function give(id){S.coll[id]=(S.coll[id]||0)+1;}
   function addCoins(n){S.coins=Math.max(0,S.coins+n); renderCoins();}
@@ -4915,7 +4915,71 @@ three/build/three.module.js:
   $$("#bkFilter .chip").forEach(ch=>ch.addEventListener("click",()=>{$$("#bkFilter .chip").forEach(c=>c.classList.remove("on")); ch.classList.add("on"); renderBook(ch.dataset.f);}));
 
   function shuffle(a){a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  // ── Konten/Login (Coins & Karten pro Konto speichern) ──
+  const ACCT=(function(){
+    const TK='torj_tok', UK='torj_usr';
+    let token=localStorage.getItem(TK)||null, user=localStorage.getItem(UK)||null, syncT=null, modal=null, btn=null;
+    const hdr=()=>token?{'Authorization':'Bearer '+token}:{};
+    async function api(path,method,body){ try{ const r=await fetch(path,{method,headers:Object.assign({'Content-Type':'application/json'},hdr()),body:body?JSON.stringify(body):undefined}); let j={}; try{j=await r.json();}catch(e){} return {ok:r.ok,status:r.status,j}; }catch(e){ return {ok:false,status:0,j:{error:'Server nicht erreichbar'}}; } }
+    function applyState(st){ if(!st||typeof st!=='object')return; Object.keys(st).forEach(k=>{ S[k]=st[k]; }); if(S.diff===undefined)S.diff=1; if(!S.coll)S.coll={}; try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} renderCoins(); renderHome(); }
+    function setUser(u){ user=u; if(u)localStorage.setItem(UK,u); else localStorage.removeItem(UK); renderBtn(); }
+    function setToken(t){ token=t; if(t)localStorage.setItem(TK,t); else localStorage.removeItem(TK); }
+    function queue(){ if(!token)return; clearTimeout(syncT); syncT=setTimeout(()=>api('/api/state','POST',{state:S}), 800); }
+    function renderBtn(){ if(btn) btn.textContent = user? ('👤 '+user) : '👤 Anmelden'; }
+    function openModal(){ if(!modal)buildModal(); modal.style.display='flex'; refreshModal(); }
+    function closeModal(){ if(modal)modal.style.display='none'; }
+    function refreshModal(){ const on=!!token; modal.querySelector('.acc-forms').style.display=on?'none':'block'; modal.querySelector('.acc-logged').style.display=on?'block':'none'; if(on)modal.querySelector('.acc-who').textContent=user||''; modal.querySelector('.acc-err').textContent=''; }
+    function buildModal(){
+      modal=document.createElement('div');
+      modal.style.cssText='position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(3,12,8,.72);padding:18px';
+      modal.innerHTML=`<div style="width:100%;max-width:360px;background:#0e2019;border:1px solid #1e3a2b;border-radius:16px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.5);color:#eafff3;font-family:system-ui">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b style="font-size:18px">Konto</b><button class="acc-x" style="background:none;border:0;color:#8fb3a0;cursor:pointer;font-size:24px;line-height:1">×</button></div>
+        <div class="acc-forms">
+          <p style="color:#9fd8bd;font-size:13px;margin:0 0 12px">Melde dich an, damit deine Coins & Karten gespeichert werden – auf jedem Gerät gleich.</p>
+          <input class="acc-u" placeholder="Benutzername" autocomplete="username" style="width:100%;margin:0 0 8px;padding:12px;border-radius:10px;border:1px solid #1e3a2b;background:#0a1712;color:#eafff3;font-size:16px">
+          <input class="acc-p" type="password" placeholder="Passwort" autocomplete="current-password" style="width:100%;margin:0 0 10px;padding:12px;border-radius:10px;border:1px solid #1e3a2b;background:#0a1712;color:#eafff3;font-size:16px">
+          <div class="acc-err" style="color:#ff8a8a;font-size:13px;min-height:18px;margin-bottom:8px"></div>
+          <button class="acc-login" style="width:100%;margin:0 0 8px;padding:12px;border:0;border-radius:10px;background:linear-gradient(180deg,#2fe071,#12934a);color:#04170d;font-weight:800;font-size:15px;cursor:pointer">Anmelden</button>
+          <button class="acc-reg" style="width:100%;padding:12px;border:1px solid #2fe071;border-radius:10px;background:none;color:#2fe071;font-weight:800;font-size:15px;cursor:pointer">Neues Konto erstellen</button>
+        </div>
+        <div class="acc-logged" style="display:none">
+          <p style="font-size:15px">Angemeldet als <b class="acc-who"></b> ✅</p>
+          <p style="color:#9fd8bd;font-size:13px">Deine Coins & Karten werden automatisch gespeichert.</p>
+          <button class="acc-logout" style="width:100%;padding:12px;border:1px solid #ff8a8a;border-radius:10px;background:none;color:#ff8a8a;font-weight:800;font-size:15px;cursor:pointer">Abmelden</button>
+        </div>
+      </div>`;
+      document.body.appendChild(modal);
+      const q=s=>modal.querySelector(s);
+      q('.acc-x').onclick=closeModal; modal.onclick=e=>{ if(e.target===modal)closeModal(); };
+      q('.acc-login').onclick=()=>doAuth('/api/login');
+      q('.acc-reg').onclick=()=>doAuth('/api/register');
+      q('.acc-logout').onclick=()=>{ setToken(null); setUser(null); refreshModal(); try{toast('Abgemeldet');}catch(e){} };
+      q('.acc-p').addEventListener('keydown',e=>{ if(e.key==='Enter')doAuth('/api/login'); });
+    }
+    async function doAuth(path){
+      const u=modal.querySelector('.acc-u').value.trim(), p=modal.querySelector('.acc-p').value;
+      const errEl=modal.querySelector('.acc-err'); errEl.textContent='…';
+      const {ok,j}=await api(path,'POST',{u,p});
+      if(!ok){ errEl.textContent=j.error||'Fehler'; return; }
+      setToken(j.token); setUser(j.user);
+      if(j.state){ applyState(j.state); } else { await api('/api/state','POST',{state:S}); }
+      errEl.textContent=''; closeModal();
+      try{toast(path.indexOf('register')>=0?'Konto erstellt ✅':'Angemeldet ✅');}catch(e){}
+    }
+    async function init(){
+      const top=document.querySelector('.top');
+      btn=document.createElement('button');
+      btn.style.cssText='margin-left:8px;border:1px solid #1e3a2b;background:#0c1526;color:#eafff3;border-radius:999px;padding:6px 12px;font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap';
+      btn.onclick=openModal; renderBtn();
+      if(top)top.appendChild(btn); else document.body.appendChild(btn);
+      if(token){ const {ok,status,j}=await api('/api/state','GET'); if(ok&&j.state){ applyState(j.state); } else if(status===401){ setToken(null); setUser(null); } }
+    }
+    return { init, queue };
+  })();
+  window.__ACCT=ACCT;
+
   renderCoins(); renderHome();
+  ACCT.init();
   (function(){ const rm=new URLSearchParams(location.search).get('room'); if(rm){ openLobby(); $("#lbCode").value=rm.toUpperCase(); setTimeout(lobbyJoin,150); } })();
 })();
 </script>
