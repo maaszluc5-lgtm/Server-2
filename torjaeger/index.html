@@ -4157,6 +4157,9 @@ three/build/three.module.js:
   function newDots(n){const d=$("#pnDots"); d.innerHTML=""; for(let i=0;i<n;i++){const s=document.createElement("div"); s.className="dot"; d.appendChild(s);}}
   function setDot(i,ok){const dots=$("#pnDots").children; if(dots[i]) dots[i].className="dot "+(ok?"g":"m");}
   function addDots(n){const d=$("#pnDots"); for(let i=0;i<n;i++){const s=document.createElement("div"); s.className="dot"; d.appendChild(s);}}
+  let penTimerId=null;
+  function clearPenTimer(){ if(penTimerId){ clearInterval(penTimerId); penTimerId=null; } }
+  function forceMiss(){ if(PEN&&PEN.turn==="you"&&!PEN.busy&&!PEN.done) shoot(Math.floor(Math.random()*6),true,true); }
   function startShootout(opp,opts){
     MODE="pen";
     PEN={opp,you:0,oppSc:0,round:0,turn:"you",sudden:false,base:opts.rounds||5,done:false,busy:false,opts};
@@ -4171,21 +4174,21 @@ three/build/three.module.js:
   function nextTurn(){
     if(PEN.done) return; resetKB();
     const isYou=PEN.turn==="you"; setZones(isYou);
-    if(isYou){$("#pnHint").innerHTML=PEN.sudden?"<b>Sudden Death!</b> Tippe eine Ecke.":"Dein Schuss – tippe eine Ecke.";}
+    if(isYou){ let left=10; const setHint=()=>{$("#pnHint").innerHTML=(PEN.sudden?"<b>Sudden Death!</b> ":"")+"Dein Schuss – <b>"+left+"s</b> · tippe eine Ecke.";}; setHint(); clearPenTimer(); penTimerId=setInterval(()=>{ if(!PEN||PEN.turn!=="you"||PEN.busy||PEN.done){ clearPenTimer(); return; } left--; if(left<=0){ clearPenTimer(); $("#pnHint").innerHTML="⏱ Zeit abgelaufen!"; forceMiss(); } else setHint(); },1000); }
     else{$("#pnHint").innerHTML=`<b>${PEN.opp}</b> schießt…`; setTimeout(()=>shoot(Math.floor(Math.random()*6),false),800);}
   }
   $$("#pnZones .zone").forEach(z=>z.addEventListener("click",()=>{
     const zz=parseInt(z.dataset.z,10);
-    if(!PEN||PEN.turn!=="you"||PEN.busy) return; shoot(zz,true);
+    if(!PEN||PEN.turn!=="you"||PEN.busy) return; clearPenTimer(); shoot(zz,true);
   }));
   function pickKeeper(zone,against){ const th=0.62-(against?((S.diff||1)-1)*0.06:0); if(Math.random()<th) return Math.floor(Math.random()*6); return Math.random()<0.5?zone:Math.floor(Math.random()*6); }
-  function shoot(zone,isYou){
-    if(PEN.busy) return; PEN.busy=true; setZones(false);
+  function shoot(zone,isYou,forced){
+    if(PEN.busy) return; PEN.busy=true; clearPenTimer(); setZones(false);
     const kz=pickKeeper(zone,isYou), tc=zoneCoord(zone), kc=zoneCoord(kz);
     const b=$("#pnBall"),k=$("#pnKeeper"),fl=$("#pnFlash");
     k.style.left=kc.x+"%"; k.style.top=kc.y+"%"; k.style.transform="translate(-50%,-50%) rotate("+(kz%3===0?-25:kz%3===2?25:0)+"deg)";
     b.style.transition="all .45s cubic-bezier(.35,0,.5,1)"; b.style.bottom="auto"; b.style.left=tc.x+"%"; b.style.top=tc.y+"%"; b.style.transform="translate(-50%,-50%) scale(.72)";
-    const scored=kz!==zone;
+    const scored=forced?false:(kz!==zone);
     setTimeout(()=>{
       fl.className="flash show "+(scored?"goal":"save"); fl.textContent=scored?"TOR!":"GEHALTEN!";
       const idx=PEN.round*2+(isYou?0:1);
@@ -4207,7 +4210,7 @@ three/build/three.module.js:
     nextTurn();
   }
   function finish(win){
-    PEN.done=true; setZones(false); $("#pnHint").textContent=""; $("#pnResult").style.display="block";
+    PEN.done=true; clearPenTimer(); setZones(false); $("#pnHint").textContent=""; $("#pnResult").style.display="block";
     const t=$("#pnResultTxt");
     if(win){t.style.color="var(--grass)"; t.textContent="✅ "+$("#pnYouName").textContent+" "+PEN.you+":"+PEN.oppSc;}
     else{t.style.color="var(--danger)"; t.textContent="❌ "+PEN.you+":"+PEN.oppSc+" "+$("#pnOppName").textContent;}
@@ -4544,9 +4547,10 @@ three/build/three.module.js:
       near.you.sort((a,b)=>a[0]-b[0]); near.opp.sort((a,b)=>a[0]-b[0]);
       const nY=near.you[0]?near.you[0][1]:-1, nO=near.opp[0]?near.opp[0][1]:-1;
       const supp=new Set(); ["you","opp"].forEach(t=>{ if(posTeam===t){ const arr=near[t]; for(let k=0;k<2&&k<arr.length;k++) supp.add(arr[k][1]); } });
+      const chase={you:new Set(),opp:new Set()}; ["you","opp"].forEach(t=>{ const arr=near[t]; for(let k=0;k<3&&k<arr.length;k++) chase[t].add(arr[k][1]); });
       for(let i=0;i<P.length;i++){ const p=P[i]; if(i===E.active)continue; if(E.net&&E.net.role==='host'&&i===E.guestActive)continue; if(p.role==="GK"){gkAI(p);continue;} if(owner===i){ownerAI(p,nY,nO);continue;}
         const teamHasBall=posTeam===p.t; const tgtGoalY=p.t==="you"?MG:(H-MG); const sm=p.t==="opp"?(1+(E.diff-1)*0.05):1; let tx,ty,s;
-        if(!teamHasBall){ tx=clampw(ball.x+(p.hx-W/2)*0.16,18,W-18); ty=clampw(ball.y+(p.hy-H/2)*0.10,MG+8,H-MG-8); s=SPD*0.96*ratf(p)*sm; }
+        if(!teamHasBall){ if(chase[p.t].has(i)){ tx=clampw(ball.x+(p.hx-W/2)*0.16,18,W-18); ty=clampw(ball.y+(p.hy-H/2)*0.10,MG+8,H-MG-8); s=SPD*0.96*ratf(p)*sm; } else { const shx=(ball.x-W/2)*0.22; tx=clampw(p.hx+shx,20,W-20); ty=clampw(p.hy+(ball.y-p.hy)*0.10,MG+8,H-MG-8); s=SPD*0.66*ratf(p)*sm; } }
         else if(supp.has(i)){ tx=clampw(ball.x+(i%2?70:-70),22,W-22); ty=clampw(ball.y+(tgtGoalY-ball.y)*0.4,MG+8,H-MG-8); s=SPD*0.82*ratf(p)*sm; }
         else { const shx=(ball.x-W/2)*0.4; let hy=p.hy+(tgtGoalY-p.hy)*0.24; tx=clampw(p.hx+shx,22,W-22); ty=clampw(hy,MG+8,H-MG-8); s=SPD*0.72*ratf(p)*sm; }
         seek(p,tx,ty,s); } }
