@@ -1,6 +1,9 @@
 /* server.js — liefert das Spiel aus und verwahrt Spielstände.
  *
- * Kein npm install nötig: SQLite ist ab Node 22 eingebaut.
+ * Kein npm install nötig. Ab Node 22 wird das eingebaute SQLite benutzt,
+ * unter Node 20 fällt der Server auf eine Datei je Spieler zurück — bei einer
+ * Handvoll Freunden ist das völlig ausreichend und spart jede Abhängigkeit.
+ *
  * Start:  PORT=4100 node server.js
  * Dauer:  pm2 start server.js --name mine
  *
@@ -14,27 +17,110 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const { DatabaseSync } = require('node:sqlite');
 
 const ROOT = process.env.MINE_DIR || __dirname;
 const PORT = parseInt(process.env.PORT || '4100', 10);
-const DB_DATEI = process.env.MINE_DB || path.join(ROOT, 'data', 'mine.db');
+const DATEN = process.env.MINE_DATA || path.join(ROOT, 'data');
+fs.mkdirSync(DATEN, { recursive: true });
 
-fs.mkdirSync(path.dirname(DB_DATEI), { recursive: true });
-const db = new DatabaseSync(DB_DATEI);
-db.exec(`
-  CREATE TABLE IF NOT EXISTS spieler (
-    code            TEXT PRIMARY KEY,
-    name            TEXT NOT NULL,
-    stand           TEXT,
-    woche_start     TEXT,
-    woche_verdient  INTEGER DEFAULT 0,
-    gesamt_verdient INTEGER DEFAULT 0,
-    angelegt        INTEGER,
-    gesehen         INTEGER
-  );
-  CREATE INDEX IF NOT EXISTS idx_woche ON spieler (woche_start, woche_verdient DESC);
-`);
+/* ---------------------------------------------------------------
+ * Speicher. Beide Varianten können dasselbe: anlegen, holen,
+ * sichern, Wochenliste.
+ * ------------------------------------------------------------- */
+const speicher = (() => {
+  try {
+    /* MINE_SPEICHER=dateien erzwingt den Dateispeicher — nützlich zum Testen
+     * und wenn man die Datenbank lieber im Klartext lesen will. */
+    if (process.env.MINE_SPEICHER === 'dateien') throw new Error('erzwungen');
+    const { DatabaseSync } = require('node:sqlite');
+    const db = new DatabaseSync(process.env.MINE_DB || path.join(DATEN, 'mine.db'));
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS spieler (
+        code            TEXT PRIMARY KEY,
+        name            TEXT NOT NULL,
+        stand           TEXT,
+        woche_start     TEXT,
+        woche_verdient  INTEGER DEFAULT 0,
+        gesamt_verdient INTEGER DEFAULT 0,
+        angelegt        INTEGER,
+        gesehen         INTEGER
+      );
+      CREATE INDEX IF NOT EXISTS idx_woche ON spieler (woche_start, woche_verdient DESC);
+    `);
+    return {
+      art: 'SQLite',
+      anlegen(code, name, woche) {
+        const jetzt = Date.now();
+        db.prepare(`INSERT INTO spieler (code, name, stand, woche_start, woche_verdient,
+                    gesamt_verdient, angelegt, gesehen) VALUES (?, ?, NULL, ?, 0, 0, ?, ?)`)
+          .run(code, name, woche, jetzt, jetzt);
+      },
+      holen(code) {
+        const z = db.prepare('SELECT * FROM spieler WHERE code = ?').get(code);
+        if (!z) return null;
+        let stand = null;
+        try { stand = z.stand ? JSON.parse(z.stand) : null; } catch (e) {}
+        return { name: z.name, stand };
+      },
+      sichern(code, d) {
+        const z = db.prepare('SELECT code FROM spieler WHERE code = ?').get(code);
+        if (!z) return false;
+        db.prepare(`UPDATE spieler SET name = ?, stand = ?, woche_start = ?, woche_verdient = ?,
+                    gesamt_verdient = ?, gesehen = ? WHERE code = ?`)
+          .run(d.name, JSON.stringify(d.stand), d.woche, d.wocheVerdient, d.gesamtVerdient, Date.now(), code);
+        return true;
+      },
+      liste(woche) {
+        return db.prepare(`SELECT code, name, woche_verdient FROM spieler
+                           WHERE woche_start = ? AND woche_verdient > 0
+                           ORDER BY woche_verdient DESC LIMIT 20`).all(woche)
+          .map((z) => ({ code: z.code, name: z.name, wocheVerdient: z.woche_verdient }));
+      },
+    };
+  } catch (e) {
+    /* Node ohne eingebautes SQLite: eine Datei je Spieler. Geschrieben wird
+     * erst daneben und dann umbenannt, damit ein Absturz mitten im Schreiben
+     * keinen halben Spielstand hinterlässt. */
+    const ORDNER = path.join(DATEN, 'spieler');
+    fs.mkdirSync(ORDNER, { recursive: true });
+    const datei = (code) => path.join(ORDNER, code.replace(/[^A-Z0-9-]/gi, '_') + '.json');
+    const lies = (code) => {
+      try { return JSON.parse(fs.readFileSync(datei(code), 'utf8')); } catch (e) { return null; }
+    };
+    const schreib = (code, o) => {
+      const ziel = datei(code), zwischen = ziel + '.tmp';
+      fs.writeFileSync(zwischen, JSON.stringify(o));
+      fs.renameSync(zwischen, ziel);
+    };
+    return {
+      art: 'Dateien (Node ohne eingebautes SQLite)',
+      anlegen(code, name, woche) {
+        schreib(code, { code, name, stand: null, woche, wocheVerdient: 0, gesamtVerdient: 0, angelegt: Date.now() });
+      },
+      holen(code) {
+        const z = lies(code);
+        return z ? { name: z.name, stand: z.stand } : null;
+      },
+      sichern(code, d) {
+        const z = lies(code);
+        if (!z) return false;
+        schreib(code, { ...z, name: d.name, stand: d.stand, woche: d.woche,
+          wocheVerdient: d.wocheVerdient, gesamtVerdient: d.gesamtVerdient, gesehen: Date.now() });
+        return true;
+      },
+      liste(woche) {
+        let namen = [];
+        try { namen = fs.readdirSync(ORDNER).filter((n) => n.endsWith('.json')); } catch (e) {}
+        return namen
+          .map((n) => { try { return JSON.parse(fs.readFileSync(path.join(ORDNER, n), 'utf8')); } catch (e) { return null; } })
+          .filter((z) => z && z.woche === woche && z.wocheVerdient > 0)
+          .sort((a, b) => b.wocheVerdient - a.wocheVerdient)
+          .slice(0, 20)
+          .map((z) => ({ code: z.code, name: z.name, wocheVerdient: z.wocheVerdient }));
+      },
+    };
+  }
+})();
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -87,52 +173,32 @@ async function api(req, res, pfad) {
   if (pfad === '/api/neu' && req.method === 'POST') {
     const d = await koerperLesen(req);
     const code = neuerCode();
-    const jetzt = Date.now();
-    db.prepare(`INSERT INTO spieler (code, name, stand, woche_start, woche_verdient,
-                gesamt_verdient, angelegt, gesehen) VALUES (?, ?, NULL, ?, 0, 0, ?, ?)`)
-      .run(code, kurz(d.name, 18) || 'Bergmann', montag(), jetzt, jetzt);
+    speicher.anlegen(code, kurz(d.name, 18) || 'Bergmann', montag());
     return json(res, 200, { code });
   }
 
   if (pfad === '/api/laden' && req.method === 'POST') {
-    const d = await koerperLesen(req);
-    const z = db.prepare('SELECT * FROM spieler WHERE code = ?').get(kurz(d.code, 16));
+    const z = speicher.holen(kurz((await koerperLesen(req)).code, 16));
     if (!z) return json(res, 404, { fehler: 'unbekannt' });
-    let stand = null;
-    try { stand = z.stand ? JSON.parse(z.stand) : null; } catch (e) {}
-    return json(res, 200, { name: z.name, stand });
+    return json(res, 200, { name: z.name, stand: z.stand });
   }
 
   if (pfad === '/api/sichern' && req.method === 'POST') {
     const d = await koerperLesen(req);
-    const code = kurz(d.code, 16);
-    const z = db.prepare('SELECT code FROM spieler WHERE code = ?').get(code);
-    if (!z) return json(res, 404, { fehler: 'unbekannt' });
-
     const woche = montag();
-    const wocheVerdient = d.wocheStart === woche ? Math.max(0, Math.round(d.wocheVerdient || 0)) : 0;
-    db.prepare(`UPDATE spieler SET name = ?, stand = ?, woche_start = ?, woche_verdient = ?,
-                gesamt_verdient = ?, gesehen = ? WHERE code = ?`)
-      .run(
-        kurz(d.name, 18) || 'Bergmann',
-        JSON.stringify(d.stand || {}),
-        woche,
-        wocheVerdient,
-        Math.max(0, Math.round(d.gesamtVerdient || 0)),
-        Date.now(),
-        code
-      );
+    const ok = speicher.sichern(kurz(d.code, 16), {
+      name: kurz(d.name, 18) || 'Bergmann',
+      stand: d.stand || {},
+      woche,
+      wocheVerdient: d.wocheStart === woche ? Math.max(0, Math.round(d.wocheVerdient || 0)) : 0,
+      gesamtVerdient: Math.max(0, Math.round(d.gesamtVerdient || 0)),
+    });
+    if (!ok) return json(res, 404, { fehler: 'unbekannt' });
     return json(res, 200, { ok: true });
   }
 
   if (pfad === '/api/liste' && req.method === 'GET') {
-    const zeilen = db.prepare(`SELECT code, name, woche_verdient FROM spieler
-                               WHERE woche_start = ? AND woche_verdient > 0
-                               ORDER BY woche_verdient DESC LIMIT 20`).all(montag());
-    return json(res, 200, {
-      woche: montag(),
-      plaetze: zeilen.map((z) => ({ code: z.code, name: z.name, wocheVerdient: z.woche_verdient })),
-    });
+    return json(res, 200, { woche: montag(), plaetze: speicher.liste(montag()) });
   }
 
   return json(res, 404, { fehler: 'unbekannt' });
@@ -167,5 +233,6 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log('Mine läuft auf http://localhost:' + PORT + '  (Datenbank: ' + DB_DATEI + ')');
+  console.log('Mine läuft auf http://localhost:' + PORT);
+  console.log('Node ' + process.versions.node + ' · Speicher: ' + speicher.art + ' in ' + DATEN);
 });

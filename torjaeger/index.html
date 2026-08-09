@@ -146,6 +146,7 @@
   .foot{color:var(--muted); font-size:11px; text-align:center; margin-top:26px; line-height:1.5}
   @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important; transition-duration:.05ms!important}}
   /* ---- real football pitch ---- */
+  .scoreboard .tmr.eilig{color:var(--danger)}
   .scoreboard .tmr{font-size:16px; color:var(--gold); min-width:46px; text-align:center; font-variant-numeric:tabular-nums; font-weight:900}
   .pitchwrap{position:relative; width:100%; margin:4px 0 0; touch-action:none; user-select:none; -webkit-user-select:none}
   canvas.pitch{display:block; width:100%; border-radius:14px; box-shadow:var(--shadow); border:1px solid #0a4f27; background:#0c6b34}
@@ -190,6 +191,7 @@
     <div class="diffbar"><span class="dl">Schwierigkeit</span><div class="dchips" id="dChips"></div></div>
     <div class="grid" style="margin-top:6px">
       <button class="tile" data-go="penalty"><span class="glow"></span><div class="ic">🥅</div><div><div class="t">Elfmeter</div><div class="d">Schnelles Duell · Best of 5</div></div></button>
+      <button class="tile" data-go="solo"><span class="glow"></span><div class="ic">⏱️</div><div><div class="t">10 Sekunden</div><div class="d">Allein vorm Tor · Serie</div></div></button>
       <button class="tile" data-go="packs"><span class="glow"></span><div class="ic">📦</div><div><div class="t">Tüte öffnen</div><div class="d">Coins gegen Karten</div></div></button>
       <button class="tile" data-mode="WM" data-go="tourney"><span class="glow"></span><div class="ic">🏆</div><div><div class="t">WM</div><div class="d">Jedes Spiel selbst</div></div></button>
       <button class="tile" data-mode="EM" data-go="tourney"><span class="glow"></span><div class="ic">🌍</div><div><div class="t">EM</div><div class="d">Europas Beste</div></div></button>
@@ -436,6 +438,7 @@
   $$("[data-go]").forEach(b=>b.addEventListener("click",()=>{
     const g=b.dataset.go;
     if(g==="penalty") startPenalty();
+    else if(g==="solo") startSolo();
     else if(g==="lobby") openLobby();
     else if(g==="tourney") openTourney(b.dataset.mode);
     else if(g==="packs"){go("packs"); $("#packStage").innerHTML=""; $("#packHint").textContent="";}
@@ -570,6 +573,16 @@
       save(); renderHome(); go("home");
     }});
   }
+  function startSolo(){
+    const pool=NATIONS; const you=pool[Math.floor(Math.random()*pool.length)];
+    let opp; do{opp=pool[Math.floor(Math.random()*pool.length)];}while(opp.n===you.n);
+    PITCH.solo(you,opp,{title:"10 Sekunden",tag:"Allein vorm Tor · "+you.f+" "+you.n,nextLabel:"Zurück",onEnd(serie){
+      const c=gcoin(8+serie*14); addCoins(c);
+      if(serie>(S.soloBest||0)){ S.soloBest=serie; toast("🏅 Neue Bestserie: "+serie+" · +"+c+" 🪙"); }
+      else toast(serie+(serie===1?" Tor":" Tore")+" · +"+c+" 🪙");
+      save(); renderHome(); go("home");
+    }});
+  }
   function startPenalty(){
     const opp=NATIONS[Math.floor(Math.random()*NATIONS.length)];
     startShootout(opp.n,{rounds:5,title:"Elfmeterschießen",youName:"Du",onEnd(win){
@@ -662,6 +675,7 @@
     function doActionFor(idx,kind,sd){
       const P=E.players,B=E.ball,a=P[idx]; if(!a)return; const hasBall=B.owner===idx;
       if(kind==="pass"){
+        if(E.pen) return;
         if(hasBall){ const t=bestPass(a); if(t>=0) passBall(a,P[t]); }
         else { const team=a.t; let nn=-1,nd=1e9; for(let i=0;i<22;i++){ if(P[i].t!==team||i===idx||P[i].role==="GK")continue; const d=dist(P[i],B); if(d<nd){nd=d;nn=i;} } if(nn>=0){ if(idx===E.active)E.active=nn; if(E.net&&idx===E.guestActive)E.guestActive=nn; } }
       } else if(kind==="shoot"){
@@ -704,22 +718,24 @@
       const net=E.net;
       if(B.owner>=0&&P[B.owner].t==="you"&&!(net&&net.mode==='coop'&&B.owner===E.guestActive)) E.active=B.owner;
       else { let nn=-1,nd=1e9; for(let i=0;i<11;i++){ if(P[i].role==="GK"&&!(B.owner<0&&B.y>H-MG-140))continue; if(net&&net.mode==='coop'&&i===E.guestActive)continue; const d=dist(P[i],B); if(d<nd){nd=d;nn=i;} } if(nn>=0)E.active=nn; }
-      const a=P[E.active]; if(a){ const mag=Math.hypot(IN.dx,IN.dy); if(mag>0.12){ const fwd=-IN.dy,strafe=IN.dx, rx=-E.aimy,ry=E.aimx; let dxw=E.aimx*fwd+rx*strafe, dyw=E.aimy*fwd+ry*strafe; const dl=Math.hypot(dxw,dyw)||1; const s=(IN.sprint?SPRINT:RUN)*ratf(a)*Math.min(1,mag/0.85); a.vx=dxw/dl*s; a.vy=dyw/dl*s; } else { a.vx*=0.55; a.vy*=0.55; } }
+      const a=P[E.active]; if(a){ const mag=Math.hypot(IN.dx,IN.dy); if(mag>0.12){ const fwd=-IN.dy,strafe=IN.dx, rx=-E.aimy,ry=E.aimx; let dxw=E.aimx*fwd+rx*strafe, dyw=E.aimy*fwd+ry*strafe; const dl=Math.hypot(dxw,dyw)||1; const s=(IN.sprint?SPRINT:RUN)*ratf(a)*Math.min(1,mag/0.85)*(E.pen?0.3:1); a.vx=dxw/dl*s; a.vy=dyw/dl*s; } else { a.vx*=0.55; a.vy*=0.55; } }
       if(a&&B.owner===E.active){ const mag=Math.hypot(IN.dx,IN.dy); if(mag>0.15){ const fwd=-IN.dy,strafe=IN.dx,rx=-E.aimy,ry=E.aimx; let dx=E.aimx*fwd+rx*strafe,dy=E.aimy*fwd+ry*strafe; const dl=Math.hypot(dx,dy)||1; E.shotDir=[dx/dl,dy/dl]; } else { const gx=W/2-a.x,gy=MG-a.y,dl=Math.hypot(gx,gy)||1; E.shotDir=[gx/dl,gy/dl]; } }
       if(net&&net.role==='host'){
         if(net.mode==='vs'){ if(B.owner>=0&&P[B.owner].t==="opp") E.guestActive=B.owner; else { let nn=-1,nd=1e9; for(let i=11;i<22;i++){ if(P[i].role==="GK")continue; const d=dist(P[i],B); if(d<nd){nd=d;nn=i;} } if(nn>=0)E.guestActive=nn; } }
         else { if(B.owner>=0&&P[B.owner].t==="you"&&B.owner!==E.active) E.guestActive=B.owner; else { let nn=-1,nd=1e9; for(let i=0;i<11;i++){ if(i===E.active||P[i].role==="GK")continue; const d=dist(P[i],B); if(d<nd){nd=d;nn=i;} } if(nn>=0)E.guestActive=nn; } }
         const g=P[E.guestActive], RI=E.remoteIn; if(g&&RI){ const mag=RI.mag||0; if(mag>0.12){ const s=(RI.sp?SPRINT:RUN)*ratf(g)*Math.min(1,mag/0.85); g.vx=RI.mv[0]*s; g.vy=RI.mv[1]*s; } else { g.vx*=0.55; g.vy*=0.55; } }
       }
-      ai();
-      for(const p of P){ p.x=clampw(p.x+p.vx*dt,10,W-10); p.y=clampw(p.y+p.vy*dt,10,H-10); const sp=Math.hypot(p.vx,p.vy); if(sp>14){p.fdx=p.vx/sp;p.fdy=p.vy/sp;} }
+      if(E.pen) penTorwart(dt); else ai();
+      for(const p of P){ if(p.park)continue; p.x=clampw(p.x+p.vx*dt,10,W-10); p.y=clampw(p.y+p.vy*dt,10,H-10); const sp=Math.hypot(p.vx,p.vy); if(sp>14){p.fdx=p.vx/sp;p.fdy=p.vy/sp;} }
       const obx=B.x, oby=B.y;
       if(B.owner>=0){ const o=P[B.owner]; let fx=o.fdx,fy=o.fdy; const fl=Math.hypot(fx,fy)||1; B.x=clampw(o.x+fx/fl*19,6,W-6); B.y=clampw(o.y+fy/fl*19,6,H-6); B.vx=o.vx;B.vy=o.vy; }
       else { B.x+=B.vx*dt; B.y+=B.vy*dt; const f=Math.pow(0.13,dt); B.vx*=f; B.vy*=f; if(Math.hypot(B.vx,B.vy)<6){B.vx=0;B.vy=0;} }
       if(B.owner<0){ for(const gi of [0,11]){ const gk=P[gi]; if(!gk||gk.role!=="GK")continue; const toGoal=(gk.t==="you"? B.vy>30 : B.vy<-30); if(!toGoal)continue; if(segDist(gk.x,gk.y,obx,oby,B.x,B.y)<34){ B.owner=gi; B.lastTouch=gk.t; B.vx=0;B.vy=0; banner("GEHALTEN!",0); setTimeout(()=>{if(E&&!E.dead)hideBanner();},600); break; } } }
       if(B.owner>=0){ const carrier=P[B.owner]; for(let i=0;i<P.length;i++){ const p=P[i]; if(p.t===carrier.t||p.role==="GK")continue; if(i===E.active)continue; if(net&&net.role==='host'&&i===E.guestActive)continue;
         if(dist(p,B)<19){ const pr=(0.9+(p.rating-72)/45)*(p.t==="opp"?(1+(E.diff-1)*0.6):1)*dt; if(Math.random()<pr){ B.owner=i; B.lastTouch=p.t; B.vx=0;B.vy=0; break; } } } }
-      ref(); clock(dt);
+      if(E.pen){ const st=E.players[E.penSchuetze];
+        st.x=clampw(st.x,W/2-90,W/2+90); st.y=clampw(st.y,MG+95,MG+235); }
+      ref(); if(E.pen) penZeit(dt); else clock(dt);
     }
 
     function ref(){ const B=E.ball; if(B.owner>=0||E.dead) return;
@@ -727,7 +743,8 @@
       if(B.y>H-MG){ if(B.x>POSTL&&B.x<POSTR) return goal("opp"); return B.lastTouch==="opp"?restart("goalkick","you"):restart("corner","opp",B.x<W/2?"L":"R"); }
       if(B.x<MG||B.x>W-MG){ const team=B.lastTouch==="you"?"opp":"you"; return restart("throwin",team); } }
 
-    function restart(type,team,side){ E.dead=true; E.offside=null; const B=E.ball; B.vx=0;B.vy=0;B.owner=-1;
+    function restart(type,team,side){ if(E.pen) return penEnde(false,"DANEBEN!");
+      E.dead=true; E.offside=null; const B=E.ball; B.vx=0;B.vy=0;B.owner=-1;
       let bx,by,label; if(type==="throwin"){ bx=B.x<MG?MG+6:W-MG-6; by=clampw(B.y,MG+24,H-MG-24); label="EINWURF"; }
       else if(type==="goalkick"){ bx=W/2; by=team==="you"?H-MG-72:MG+72; label="ABSTOSS"; }
       else { bx=side==="L"?MG+12:W-MG-12; by=team==="you"?MG+14:H-MG-14; label="ECKE"; }
@@ -736,7 +753,8 @@
         if(idx>=0){ E.players[idx].x=B.x; E.players[idx].y=B.y+(team==="you"?20:-20); B.owner=idx; B.lastTouch=team; if(team==="you")E.active=idx; }
         E.dead=false; hideBanner(); },700); }
 
-    function goal(team){ E.dead=true; E.offside=null; const B=E.ball; B.owner=-1;B.vx=0;B.vy=0;
+    function goal(team){ if(E.pen) return penEnde(team==="you","⚽ TOR!");
+      E.dead=true; E.offside=null; const B=E.ball; B.owner=-1;B.vx=0;B.vy=0;
       if(team==="you"){ E.ys++; $("#ptYouSc").textContent=E.ys; } else { E.os++; $("#ptOppSc").textContent=E.os; }
       banner("⚽ TOR!",1);
       setTimeout(()=>{ if(!E)return; hideBanner(); kickoff(team==="you"?"opp":"you"); E.dead=false; },1400); }
@@ -761,9 +779,11 @@
     function updateCamera(dt){ const a=E.players[E.active],B=E.ball; if(!a)return; let ax,ay;
       if(dist(a,B)<48){ ax=0; ay=(a.t==="opp"?1:-1); } else { const dx=B.x-a.x,dy=B.y-a.y,d=Math.hypot(dx,dy)||1; ax=dx/d; ay=dy/d; }
       const k=Math.min(1,dt*4); E.aimx+=(ax-E.aimx)*k; E.aimy+=(ay-E.aimy)*k; const al=Math.hypot(E.aimx,E.aimy)||1; E.aimx/=al; E.aimy/=al;
-      const tcx=a.x-E.aimx*CAMBACK, tcy=a.y-E.aimy*CAMBACK, kc=Math.min(1,dt*5); E.camx+=(tcx-E.camx)*kc; E.camy+=(tcy-E.camy)*kc; }
+      const zurueck=E.pen?152:CAMBACK;   /* beim Elfmeter weiter weg, sonst steht der Schütze vor dem Tor */
+      const tcx=a.x-E.aimx*zurueck, tcy=a.y-E.aimy*zurueck, kc=Math.min(1,dt*5); E.camx+=(tcx-E.camx)*kc; E.camy+=(tcy-E.camy)*kc; }
     function projPt(X,Y){ const dx=X-E.camx,dy=Y-E.camy; return {fwd:dx*E.aimx+dy*E.aimy, lat:dx*(-E.aimy)+dy*E.aimx}; }
-    function scr(pt){ const f=cv.width*0.92, hz=cv.height*0.31; return {x:cv.width/2+(pt.lat/pt.fwd)*f, y:hz+(CAMH/pt.fwd)*f, s:f/pt.fwd}; }
+    function scr(pt){ const f=cv.width*0.92, hz=cv.height*0.31, ch=(E&&E.pen)?88:CAMH;   /* beim Elfmeter höher, damit man über den Schützen ins Tor sieht */
+      return {x:cv.width/2+(pt.lat/pt.fwd)*f, y:hz+(ch/pt.fwd)*f, s:f/pt.fwd}; }
     function wline(x1,y1,x2,y2){ let a=projPt(x1,y1),b=projPt(x2,y2); if(a.fwd<NEAR&&b.fwd<NEAR)return;
       if(a.fwd<NEAR){const t=(NEAR-a.fwd)/(b.fwd-a.fwd); a={fwd:NEAR,lat:a.lat+(b.lat-a.lat)*t};} else if(b.fwd<NEAR){const t=(NEAR-b.fwd)/(a.fwd-b.fwd); b={fwd:NEAR,lat:b.lat+(a.lat-b.lat)*t};}
       const sa=scr(a),sb=scr(b); ctx.beginPath(); ctx.moveTo(sa.x,sa.y); ctx.lineTo(sb.x,sb.y); ctx.stroke(); }
@@ -783,7 +803,7 @@
       ctx.fillStyle=you?"#04170d":"#fff"; ctx.font="bold "+Math.max(8,Math.round(11*sc))+"px system-ui"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(p.num,e.x,e.y-bh*0.5); }
     function drawBall(e){ const r=Math.max(2.5,7*e.sc); ctx.fillStyle="rgba(0,0,0,.28)"; ctx.beginPath(); ctx.ellipse(e.x,e.y,r*1.1,r*0.5,0,0,7); ctx.fill(); ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(e.x,e.y-r,r,0,7); ctx.fill(); ctx.lineWidth=1; ctx.strokeStyle="#111"; ctx.stroke(); }
     function minimap(cw,ch){ const mmW=Math.min(72,cw*0.19),mmH=mmW*H/W,mx=cw-mmW-8,my=8; ctx.fillStyle="rgba(4,16,10,.55)"; ctx.fillRect(mx,my,mmW,mmH); ctx.strokeStyle="rgba(255,255,255,.35)"; ctx.lineWidth=1; ctx.strokeRect(mx,my,mmW,mmH); ctx.beginPath(); ctx.moveTo(mx,my+mmH/2); ctx.lineTo(mx+mmW,my+mmH/2); ctx.stroke();
-      for(const p of E.players){ ctx.fillStyle=p.t==="you"?"#2fe071":"#ff5b5b"; ctx.beginPath(); ctx.arc(mx+p.x/W*mmW,my+p.y/H*mmH,p.role==="GK"?1.3:1.7,0,7); ctx.fill(); }
+      for(const p of E.players){ if(p.park)continue; ctx.fillStyle=p.t==="you"?"#2fe071":"#ff5b5b"; ctx.beginPath(); ctx.arc(mx+p.x/W*mmW,my+p.y/H*mmH,p.role==="GK"?1.3:1.7,0,7); ctx.fill(); }
       ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(mx+E.ball.x/W*mmW,my+E.ball.y/H*mmH,2,0,7); ctx.fill(); }
     function draw(){ const cw=cv.width,ch=cv.height,hz=ch*0.31; ctx.setTransform(1,0,0,1,0,0); ctx.lineCap="round"; ctx.lineJoin="round";
       let sky=ctx.createLinearGradient(0,0,0,hz); sky.addColorStop(0,"#0a1810"); sky.addColorStop(1,"#16442a"); ctx.fillStyle=sky; ctx.fillRect(0,0,cw,hz);
@@ -801,10 +821,10 @@
         for(let i=0;i<7;i++){ const t0=22+i*24,t1=t0+13; wline(bx+dir[0]*t0,by+dir[1]*t0,bx+dir[0]*t1,by+dir[1]*t1); }
         wcircle(bx+dir[0]*190,by+dir[1]*190,11); }
       const ent=[];
-      for(let i=0;i<E.players.length;i++){ const p=E.players[i]; const b=projPt(p.x,p.y); if(b.fwd<NEAR)continue; const s=scr(b); ent.push({i,p,x:s.x,y:s.y,sc:s.s,fwd:b.fwd,t:0}); }
+      for(let i=0;i<E.players.length;i++){ const p=E.players[i]; if(p.park)continue; const b=projPt(p.x,p.y); if(b.fwd<NEAR)continue; const s=scr(b); ent.push({i,p,x:s.x,y:s.y,sc:s.s,fwd:b.fwd,t:0}); }
       { const b=projPt(E.ball.x,E.ball.y); if(b.fwd>=NEAR){ const s=scr(b); ent.push({x:s.x,y:s.y,sc:s.s,fwd:b.fwd,t:1}); } }
       ent.sort((a,b)=>b.fwd-a.fwd); for(const e of ent){ e.t?drawBall(e):drawPlayer(e); }
-      minimap(cw,ch); }
+      if(!E.pen) minimap(cw,ch); }
 
     function frame(ts){ if(!E||!E.running)return; if(!last)last=ts; let dt=(ts-last)/1000; last=ts; if(dt>0.05)dt=0.05;
       const net=E.net;
@@ -843,15 +863,125 @@
         last=0; raf=requestAnimationFrame(frame); });
     }
 
+
+    /* ---- 10 Sekunden: allein vorm Tor, drei Knöpfe, eine Uhr -------------
+     * Läuft in derselben Engine wie ein normales Spiel. Alle Spieler außer
+     * dem Schützen und dem gegnerischen Torwart werden geparkt: sie werden
+     * weder bewegt noch gezeichnet, damit die Index-Logik der Engine
+     * (0 = dein Torwart, 11 = seiner) unangetastet bleibt. */
+    const SOLO_ZEIT=10;
+
+    function penStellung(){
+      const P=E.players,B=E.ball;
+      for(let i=0;i<P.length;i++){ const p=P[i]; p.vx=0; p.vy=0; p.park=(i!==E.penSchuetze&&i!==11); }
+      /* Elfmeterpunkt: rund 11 Meter, also ~120 Pixel vom Tor. Gemessen:
+       * bei 210 Pixeln ging jeder brauchbare Winkel neben den Pfosten,
+       * geradeaus hielt der Torwart — dazwischen lag kein Fenster. */
+      const gk=P[11]; gk.x=W/2+E.pen.gkAus; gk.y=MG+18; gk.fdx=0; gk.fdy=1;
+      const st=P[E.penSchuetze]; st.x=W/2; st.y=MG+139; st.fdx=0; st.fdy=-1;
+      E.active=E.penSchuetze; E.shotDir=[0,-1]; E.offside=null; E.kickCd=0;
+      B.x=W/2; B.y=MG+120; B.vx=0; B.vy=0; B.owner=E.penSchuetze; B.lastTouch="you";
+      E.camx=W/2; E.camy=st.y+40;
+    }
+
+    /* Der Torwart hält die Linie und folgt dem Ball seitlich. Mit jedem Tor
+     * wird er schneller — dadurch endet jede Serie irgendwann von selbst. */
+    function penTorwart(dt){
+      const gk=E.players[11], B=E.ball, p=E.pen; if(!gk) return;
+      /* Ist der Ball unterwegs, entscheidet er sich für eine Ecke und zieht
+       * durch — nachkorrigieren darf er nicht. Vorher folgte er dem Ball bis
+       * zur Linie und hielt praktisch alles; gemessen war nur ein Fenster von
+       * fünf Grad überhaupt ein Tor. Umgekehrt reichte reines Mitgehen nicht:
+       * der Schütze steht ja still, also stand auch der Torwart immer mittig
+       * und acht von acht Bällen waren drin. Jetzt rät er, und die Trefferrate
+       * steigt mit deiner Serie — dadurch endet jede Serie irgendwann. */
+      if(B.owner<0){
+        if(p.hecht===null||p.hecht===undefined){
+          const seite=Math.sign(B.vx)||0;
+          const trifft=Math.random()<Math.min(0.70,0.22+p.serie*0.06);
+          p.hecht = trifft ? seite : (seite===0 ? (Math.random()<0.5?-1:1) : (Math.random()<0.5?0:-seite));
+        }
+        const ziel=clampw(W/2+p.hecht*62,POSTL+12,POSTR-12), d=ziel-gk.x;
+        gk.vx=Math.abs(d)<4?0:Math.sign(d)*Math.min(215+p.serie*12,Math.abs(d)*6);
+        gk.vy=(MG+18-gk.y)*2; gk.fdx=0; gk.fdy=1;
+        return;
+      }
+      p.hecht=null;
+      /* Er spiegelt den Schützen nur zur Hälfte — sonst steht er immer
+       * schon dort, wo der Schuss hingeht, und die Serie endet beim ersten
+       * Versuch. Mit jedem Tor wird er schneller und deckt mehr ab. */
+      const tempo=74+E.pen.serie*10, spiegel=Math.min(0.9,0.5+E.pen.serie*0.06);
+      const ziel=clampw(W/2+(B.x-W/2)*spiegel,POSTL+12,POSTR-12), dx=ziel-gk.x;
+      gk.vx=Math.abs(dx)<3?0:Math.sign(dx)*Math.min(tempo,Math.abs(dx)*4.5);
+      gk.vy=(MG+18-gk.y)*2; gk.fdx=0; gk.fdy=1;
+    }
+
+    function penZeit(dt){
+      const p=E.pen; if(p.aus) return;
+      const P=E.players,B=E.ball;
+      if(B.owner>=0&&P[B.owner]&&P[B.owner].t==="opp") return penEnde(false,"GEHALTEN!");
+      p.zeit-=dt;
+      const uhr=$("#ptClock");
+      uhr.textContent=Math.max(0,p.zeit).toFixed(1)+"s";
+      uhr.classList.toggle("eilig",p.zeit<=3);
+      if(p.zeit<=0) penEnde(false,"ZU SPÄT!");
+    }
+
+    function penEnde(getroffen,text){
+      const p=E.pen; if(p.aus) return; p.aus=true; E.dead=true;
+      E.ball.vx=0; E.ball.vy=0;
+      if(getroffen){ p.serie++; E.ys=p.serie; $("#ptYouSc").textContent=E.ys; }
+      banner(text,getroffen?1:0);
+      setTimeout(()=>{ if(!E||!E.pen) return; hideBanner(); getroffen?penNeu():penSchluss(); },getroffen?1200:1500);
+    }
+
+    function penNeu(){
+      const p=E.pen; p.versuch++; p.zeit=SOLO_ZEIT; p.aus=false;
+      p.gkAus=(Math.random()*2-1)*22;   /* er steht nicht jedes Mal exakt mittig */
+      p.hecht=null;
+      penStellung(); E.dead=true;
+      $("#ptClock").textContent=SOLO_ZEIT.toFixed(1)+"s"; $("#ptClock").classList.remove("eilig");
+      banner(p.versuch===1?"LOS!":"VERSUCH "+p.versuch,0);
+      setTimeout(()=>{ if(!E||!E.pen) return; hideBanner(); E.dead=false; },800);
+    }
+
+    function penSchluss(){
+      const serie=E.pen.serie;
+      E.running=false; cancelAnimationFrame(raf); MODE=null;
+      $("#ptClock").classList.remove("eilig");
+      $("#ptResult").style.display="block";
+      const t=$("#ptResultTxt"); t.style.color=serie>0?"var(--grass)":"var(--danger)";
+      t.textContent=(serie>0?"⚽ ":"❌ ")+serie+(serie===1?" Tor":" Tore")+" in Folge";
+      $("#ptNext").textContent=E.opts.nextLabel||"Weiter";
+      const oe=E.opts.onEnd; $("#ptNext").onclick=()=>oe(serie);
+    }
+
+    function solo(you,opp,opts){ initControls(); MODE="match";
+      E={you,opp,opts,players:[...buildXI(you,"you"),...buildXI(opp,"opp")],ball:{x:W/2,y:H/2,vx:0,vy:0,owner:-1,lastTouch:null},
+         active:9,ys:0,os:0,clock:0,half:1,running:true,dead:true,kickCd:0,matchReal:150,offside:null,
+         aimx:0,aimy:-1,camx:W/2,camy:H*0.72,diff:(S.diff||1),shotDir:[0,-1],
+         pen:{zeit:SOLO_ZEIT,serie:0,versuch:0,aus:true,gkAus:0,hecht:null}};
+      E.penSchuetze=(E.players[10]&&E.players[10].rating>E.players[9].rating)?10:9;
+      $("#ptTitle").textContent=opts.title||"10 Sekunden"; $("#ptTag").textContent=opts.tag||"";
+      $("#ptYouName").textContent="Tore"; $("#ptOppName").textContent=opp.n;
+      $("#ptYouSc").textContent="0"; $("#ptOppSc").textContent="—";
+      $("#ptResult").style.display="none";
+      $("#ptHint").innerHTML='Joystick = <b>zielen</b> (gelbe Linie zeigt den Schuss) · <b>Schuss</b> · triff die Ecke, der Torwart rät mit';
+      go("pitch");
+      requestAnimationFrame(()=>{ sizeCanvas(); last=0; raf=requestAnimationFrame(frame); penNeu(); });
+    }
+
     function start(you,opp,opts){ initControls(); MODE="match";
       E={you,opp,opts,players:[...buildXI(you,"you"),...buildXI(opp,"opp")],ball:{x:W/2,y:H/2,vx:0,vy:0,owner:-1,lastTouch:null},active:6,ys:0,os:0,clock:0,half:1,running:true,dead:true,kickCd:0,matchReal:150,offside:null,aimx:0,aimy:-1,camx:W/2,camy:H*0.72,diff:(S.diff||1),shotDir:[0,-1]};
       $("#ptTitle").textContent=opts.title||"Spiel"; $("#ptTag").textContent=opts.tag||"";
       $("#ptYouName").textContent=you.n; $("#ptOppName").textContent=opp.n; $("#ptYouSc").textContent="0"; $("#ptOppSc").textContent="0"; $("#ptClock").textContent="0'";
-      $("#ptResult").style.display="none"; go("pitch");
+      $("#ptResult").style.display="none";
+      $("#ptHint").innerHTML='Joystick = laufen & <b>zielen</b> (gelbe Linie zeigt den Schuss) · <b>Schuss</b> · <b>Pass</b> (ohne Ball = wechseln) · <b>Tackle</b> = Ball abnehmen · mit Abseits 🚩';
+      go("pitch");
       requestAnimationFrame(()=>{ sizeCanvas(); banner("ANPFIFF",0); setTimeout(()=>{ if(!E)return; hideBanner(); kickoff("you"); E.dead=false; },900); last=0; raf=requestAnimationFrame(frame); });
     }
     function stop(){ if(E)E.running=false; cancelAnimationFrame(raf); E=null; MODE=null; hideBanner(); }
-    return {start,stop,startNet,onNet};
+    return {start,solo,stop,startNet,onNet};
   })();
 
   function startMatch(you,opp,opts){ PITCH.start(you,opp,opts); }
