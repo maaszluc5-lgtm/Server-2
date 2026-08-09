@@ -1,0 +1,234 @@
+/* style.css — dunkel, eine Spalte, für den Daumen gebaut.
+ * Farben kommen aus dem Berg: Schiefer, Kupfer, Amethyst. */
+
+:root{
+  --grund:#0f1117;
+  --tafel:#181b23;
+  --tafel2:#20242e;
+  --hoch:#2a2f3b;
+  --linie:#2e3440;
+  --text:#e8eaf0;
+  --matt:#9099a8;
+  --amethyst:#a171e6;
+  --amethyst-tief:#7b4fd0;
+  --kupfer:#c8783f;
+  --gold:#e3b23c;
+  --gut:#4dc08d;
+  --warn:#e08a6a;
+  --r:14px;
+  --maxw:520px;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:radial-gradient(120% 70% at 50% -10%, #1b1a2c 0%, var(--grund) 62%),var(--grund);
+  color:var(--text);
+  min-height:100dvh;
+  -webkit-tap-highlight-color:transparent;
+}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:10px 14px 96px;position:relative}
+
+/* ---------- Kopfzeile ---------- */
+.top{
+  display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:20;
+  padding:10px 12px;margin:0 -4px 12px;border-radius:14px;
+  background:linear-gradient(180deg,rgba(16,18,25,.97),rgba(16,18,25,.84));
+  backdrop-filter:blur(8px);border:1px solid var(--linie);
+}
+.brand{font-weight:900;letter-spacing:.14em;font-size:15px;color:var(--amethyst)}
+.spacer{flex:1}
+.tiefe,.geld{
+  font-weight:800;font-size:14px;padding:6px 11px;border-radius:999px;
+  font-variant-numeric:tabular-nums;
+}
+.tiefe{background:var(--tafel2);border:1px solid var(--linie);color:var(--matt)}
+.geld{background:linear-gradient(180deg,#3a2f08,#241d05);color:var(--gold);border:1px solid #6b520f}
+.geld::after{content:" ⛃"}
+
+/* ---------- Bildschirme ---------- */
+.screen{display:none;animation:auf .24s ease}
+.screen.aktiv{display:block}
+@keyframes auf{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+h1.hero{
+  font-size:clamp(28px,9vw,40px);line-height:1;margin:8px 2px 4px;
+  font-weight:900;letter-spacing:-.01em;text-transform:uppercase;
+}
+h1.hero span{color:var(--amethyst)}
+.sub{color:var(--matt);margin:6px 2px 16px;font-size:14px;line-height:1.5}
+
+.karte{
+  background:linear-gradient(165deg,var(--tafel2),var(--tafel));
+  border:1px solid var(--linie);border-radius:var(--r);
+  padding:14px 15px;margin:0 0 12px;
+}
+.karte h3{
+  font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--matt);margin:0 0 10px;
+}
+.klein{font-size:13px;color:var(--matt);margin:0 0 10px;line-height:1.45}
+
+/* ---------- Knöpfe ---------- */
+.knopf{
+  appearance:none;border:1px solid var(--linie);border-radius:12px;
+  background:var(--hoch);color:var(--text);
+  font-size:15px;font-weight:700;padding:12px 16px;cursor:pointer;
+  transition:transform .1s ease,opacity .1s ease;
+}
+.knopf:active{transform:scale(.97)}
+.knopf:focus-visible{outline:3px solid var(--amethyst);outline-offset:2px}
+.knopf[disabled]{opacity:.38;cursor:default}
+.knopf.gross{
+  width:100%;padding:17px;font-size:17px;font-weight:900;letter-spacing:.02em;
+  background:linear-gradient(180deg,var(--amethyst),var(--amethyst-tief));
+  border-color:#5f3bb0;color:#fff;margin:4px 0 16px;
+}
+.knopf.klein{padding:8px 12px;font-size:13.5px;font-weight:700}
+.knopfreihe{display:flex;gap:8px;margin:12px 0 0}
+.knopfreihe .knopf{flex:1}
+
+/* ---------- Vorbereitung ---------- */
+.kachelreihe{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 14px}
+.wert{
+  background:var(--tafel);border:1px solid var(--linie);border-radius:12px;
+  padding:12px 10px;text-align:center;
+}
+.wert b{display:block;font-size:24px;font-weight:900;font-variant-numeric:tabular-nums}
+.wert i{display:block;font-style:normal;font-size:11px;color:var(--matt);margin-top:2px;
+  text-transform:uppercase;letter-spacing:.08em}
+
+/* ---------- Abstieg ---------- */
+.leiste{margin:0 0 10px}
+.balken{
+  height:8px;border-radius:999px;background:var(--tafel2);
+  border:1px solid var(--linie);overflow:hidden;
+}
+.balken span{
+  display:block;height:100%;width:100%;
+  background:linear-gradient(90deg,var(--amethyst-tief),var(--amethyst));
+  transition:width .18s ease;
+}
+.leiste-zahlen{
+  margin-top:7px;font-size:12.5px;color:var(--matt);
+  font-variant-numeric:tabular-nums;display:flex;gap:6px;flex-wrap:wrap;
+}
+.trenner{opacity:.5}
+
+.raster-halter{
+  border:1px solid var(--linie);border-radius:var(--r);
+  background:#0b0d12;padding:6px;overflow:hidden;
+}
+.raster{
+  display:grid;grid-template-columns:repeat(7,1fr);gap:3px;
+}
+.feld{
+  aspect-ratio:1;border-radius:7px;border:1px solid transparent;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;font-variant-numeric:tabular-nums;
+  background:#161a22;color:#404858;position:relative;
+  cursor:default;padding:0;appearance:none;
+}
+.feld.dunkel{background:#0d1015;color:transparent}
+.feld.leer{background:#0b0e13;border-color:#171b23}
+.feld.fels{background:linear-gradient(160deg,#2b303b,#222732);color:#79839a}
+.feld.erz{color:#0d1015}
+.feld.erreichbar{cursor:pointer;border-color:var(--amethyst);box-shadow:0 0 0 1px rgba(161,113,230,.35)}
+.feld.erreichbar:active{transform:scale(.94)}
+.feld.zuteuer{border-color:#5a3038;box-shadow:none}
+.feld.spieler{background:linear-gradient(180deg,var(--amethyst),var(--amethyst-tief));border-color:#c7a6ff}
+.feld .punkt{
+  position:absolute;inset:26%;border-radius:50%;
+}
+.feld .preis{
+  position:absolute;top:2px;left:4px;font-size:10px;font-weight:800;
+  color:#aab4c6;text-shadow:0 1px 2px #0b0d12;
+}
+.hinweis{
+  min-height:20px;margin:9px 2px 0;font-size:13px;color:var(--warn);
+}
+.hinweis.gut{color:var(--gut)}
+
+/* ---------- Zuhause: die Stube ---------- */
+.stube{
+  border:1px solid var(--linie);border-radius:var(--r);
+  background:linear-gradient(180deg,#191c25,#12141a);
+  padding:0;margin:0 0 12px;overflow:hidden;
+}
+.stube svg{display:block;width:100%;height:auto}
+
+/* ---------- Listen im Zuhause ---------- */
+.zeile{
+  display:flex;align-items:center;gap:10px;padding:9px 0;
+  border-bottom:1px solid var(--linie);
+}
+.zeile:last-child{border-bottom:none}
+.zeile .name{flex:1;font-size:14.5px;font-weight:600}
+.zeile .name small{display:block;font-weight:400;font-size:12px;color:var(--matt);margin-top:1px}
+.zeile .zahl{font-variant-numeric:tabular-nums;font-weight:800;font-size:15px;color:var(--matt)}
+.perle{width:12px;height:12px;border-radius:50%;flex:0 0 auto;box-shadow:0 0 0 1px rgba(255,255,255,.14)}
+.leerhinweis{color:var(--matt);font-size:13.5px;padding:4px 0}
+
+/* ---------- Aufträge ---------- */
+.fortschritt{
+  height:8px;border-radius:999px;background:var(--tafel2);border:1px solid var(--linie);
+  overflow:hidden;margin:10px 0 6px;
+}
+.fortschritt span{display:block;height:100%;background:var(--gut);transition:width .25s ease}
+.lohn{color:var(--gold);font-weight:800;font-variant-numeric:tabular-nums}
+.auftragskopf{font-size:19px;font-weight:900;margin:0 0 4px}
+
+/* ---------- Bestenliste ---------- */
+.platz{
+  display:flex;align-items:center;gap:11px;padding:10px 0;
+  border-bottom:1px solid var(--linie);
+}
+.platz:last-child{border-bottom:none}
+.platz .nr{
+  width:24px;text-align:right;font-variant-numeric:tabular-nums;
+  font-weight:800;color:var(--matt);font-size:14px;
+}
+.platz .wer{flex:1;font-weight:600;font-size:15px}
+.platz .betrag{font-variant-numeric:tabular-nums;font-weight:800;color:var(--gold)}
+.platz.ich{background:rgba(161,113,230,.12);border-radius:8px;padding-left:8px;padding-right:8px;margin:0 -8px}
+.code{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:15px;letter-spacing:.06em;background:var(--grund);
+  border:1px solid var(--linie);border-radius:9px;padding:9px 11px;
+  display:block;margin:8px 0 10px;word-break:break-all;color:var(--amethyst);
+}
+input[type=text]{
+  width:100%;background:var(--grund);border:1px solid var(--linie);
+  border-radius:10px;padding:11px 12px;color:var(--text);font-size:15px;
+  margin:0 0 9px;font-family:inherit;
+}
+input[type=text]:focus{outline:2px solid var(--amethyst);outline-offset:1px}
+
+/* ---------- Navigation ---------- */
+.nav{
+  position:fixed;left:0;right:0;bottom:0;z-index:30;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:4px;
+  max-width:var(--maxw);margin:0 auto;padding:7px 10px calc(7px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(16,18,25,.86),rgba(16,18,25,.99));
+  border-top:1px solid var(--linie);backdrop-filter:blur(10px);
+}
+.tab{
+  appearance:none;border:none;background:transparent;color:var(--matt);
+  font-size:12.5px;font-weight:800;letter-spacing:.03em;padding:9px 4px;
+  border-radius:10px;cursor:pointer;font-family:inherit;
+}
+.tab.aktiv{color:var(--text);background:var(--tafel2)}
+.tab:focus-visible{outline:2px solid var(--amethyst)}
+
+/* ---------- Meldungen ---------- */
+.melder{
+  position:fixed;left:50%;bottom:78px;transform:translateX(-50%) translateY(14px);
+  z-index:50;pointer-events:none;opacity:0;transition:opacity .2s ease,transform .2s ease;
+  background:var(--hoch);border:1px solid var(--linie);border-radius:999px;
+  padding:10px 16px;font-size:14px;font-weight:700;max-width:88vw;text-align:center;
+}
+.melder.zeig{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}

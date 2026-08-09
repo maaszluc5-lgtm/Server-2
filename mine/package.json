@@ -1,0 +1,13 @@
+{
+  "name": "mine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Erze graben, Schmuck schmieden, Auftraege erfuellen",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=22.5"
+  }
+}

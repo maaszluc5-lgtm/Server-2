@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#12141a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mine">
+<link rel="manifest" href="manifest.json">
+<title>Mine — graben, schmieden, verkaufen</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="top">
+    <div class="brand">MINE</div>
+    <div class="spacer"></div>
+    <div class="tiefe" id="anzeige-tiefe">0 m</div>
+    <div class="geld" id="anzeige-geld">0</div>
+  </div>
+
+  <!-- ---------------- Mine ---------------- -->
+  <section class="screen aktiv" id="s-mine">
+
+    <div id="mine-vorbereitung">
+      <h1 class="hero">Der <span>Berg</span></h1>
+      <p class="sub">Jeder Abstieg ist eine Entscheidung: geradeaus tief oder seitwärts zum Erz. Nach oben geht es nicht zurück.</p>
+
+      <div class="kachelreihe">
+        <div class="wert"><b id="vor-schlaege">60</b><i>Schläge</i></div>
+        <div class="wert"><b id="vor-platz">20</b><i>Rucksack</i></div>
+        <div class="wert"><b id="vor-sicht">3</b><i>Sicht</i></div>
+      </div>
+
+      <button class="knopf gross" id="knopf-abstieg">Abstieg beginnen</button>
+
+      <div class="karte" id="letzter-fund" hidden>
+        <h3>Letzte Ausbeute</h3>
+        <div id="letzter-fund-inhalt"></div>
+      </div>
+    </div>
+
+    <div id="mine-lauf" hidden>
+      <div class="leiste">
+        <div class="balken" title="Schläge"><span id="balken-schlaege"></span></div>
+        <div class="leiste-zahlen">
+          <span id="lauf-schlaege">60</span> Schläge
+          <span class="trenner">·</span>
+          <span id="lauf-ladung">0/20</span> Rucksack
+          <span class="trenner">·</span>
+          <span id="lauf-tiefe">0 m</span>
+        </div>
+      </div>
+
+      <div class="raster-halter">
+        <div class="raster" id="raster"></div>
+      </div>
+
+      <div class="hinweis" id="hinweis"></div>
+
+      <div class="knopfreihe">
+        <button class="knopf" id="knopf-auftauchen">Auftauchen</button>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ---------------- Zuhause ---------------- -->
+  <section class="screen" id="s-heim">
+    <h1 class="hero">Zu<span>hause</span></h1>
+    <p class="sub">Erz einschmelzen, Ringe schmieden, Werkzeug verbessern.</p>
+
+    <div class="stube" id="stube"></div>
+
+    <div class="karte">
+      <h3>Ofen</h3>
+      <p class="klein">Drei Erz ergeben einen Barren. Amethyst kommt nicht in den Ofen.</p>
+      <div id="ofen"></div>
+    </div>
+
+    <div class="karte">
+      <h3>Werkbank</h3>
+      <div id="werkbank"></div>
+    </div>
+
+    <div class="karte">
+      <h3>Lager</h3>
+      <div id="lager"></div>
+    </div>
+
+    <div class="karte">
+      <h3>Ausbauen</h3>
+      <div id="ausbauten"></div>
+    </div>
+  </section>
+
+  <!-- ---------------- Aufträge ---------------- -->
+  <section class="screen" id="s-auftrag">
+    <h1 class="hero">Auf<span>träge</span></h1>
+    <p class="sub">Ein Kunde nach dem anderen. Über einen Auftrag bringt dasselbe Stück deutlich mehr als über den Verkauf.</p>
+    <div id="auftrag"></div>
+  </section>
+
+  <!-- ---------------- Bestenliste ---------------- -->
+  <section class="screen" id="s-liste">
+    <h1 class="hero">Best<span>enliste</span></h1>
+    <p class="sub">Gewertet wird, was du in dieser Woche verdient hast. Montag fängt die Liste wieder bei null an.</p>
+
+    <div class="karte" id="konto-karte"></div>
+
+    <div class="karte">
+      <h3>Diese Woche</h3>
+      <div id="liste"></div>
+    </div>
+  </section>
+
+  <div class="nav">
+    <button class="tab aktiv" data-ziel="s-mine">Mine</button>
+    <button class="tab" data-ziel="s-heim">Zuhause</button>
+    <button class="tab" data-ziel="s-auftrag">Aufträge</button>
+    <button class="tab" data-ziel="s-liste">Liste</button>
+  </div>
+
+</div>
+
+<div class="melder" id="melder"></div>
+
+<script src="js/data.js"></script>
+<script src="js/mine.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>
