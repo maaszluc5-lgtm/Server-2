@@ -76,6 +76,13 @@
   .flash.goal{color:var(--grass)} .flash.save{color:var(--danger)}
   @keyframes pop{0%{opacity:0;transform:scale(.6)}25%{opacity:1;transform:scale(1.08)}75%{opacity:1;transform:scale(1)}100%{opacity:0}}
   .hint{text-align:center; color:var(--muted); font-size:13px; margin:8px 0 2px; min-height:18px}
+  .penclock{display:flex; align-items:center; gap:10px; margin:4px 2px 8px}
+  .penclock[hidden]{display:none}
+  .pcbar{flex:1; height:9px; border-radius:99px; background:rgba(255,255,255,.07); border:1px solid var(--line); overflow:hidden}
+  .pcbar span{display:block; height:100%; width:100%; background:linear-gradient(90deg,var(--grass-deep),var(--grass))}
+  .pctime{font-weight:900; font-variant-numeric:tabular-nums; font-size:15px; color:var(--grass); min-width:46px; text-align:right}
+  .penclock.eilig .pcbar span{background:linear-gradient(90deg,#8c1f1f,var(--danger))}
+  .penclock.eilig .pctime{color:var(--danger)}
   .hint b{color:var(--grass)}
   .roundtag{text-align:center; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--gold); margin:0 0 6px}
   .bracket{display:flex; flex-direction:column; gap:8px; margin-top:6px}
@@ -204,6 +211,10 @@
         <div class="team" id="pnOppName">Gegner</div>
       </div>
       <div class="dots" id="pnDots"></div>
+      <div class="penclock" id="pnClock" hidden>
+        <div class="pcbar"><span id="pnClockBar"></span></div>
+        <div class="pctime"><b id="pnClockNum">10.0</b>s</div>
+      </div>
       <div class="goalwrap">
         <div class="goal"></div>
         <div class="keeper" id="pnKeeper">🧤</div>
@@ -421,7 +432,7 @@
   function renderCoins(){$("#coinBal").textContent=S.coins;}
   function renderHome(){$("#stCards").textContent=ownedCount(); $("#stTotal").textContent=ROSTER.length; $("#stStreak").textContent=S.streak; $("#stTitles").textContent=S.titles; renderDiff();}
   function renderDiff(){ const w=$("#dChips"); if(!w)return; w.innerHTML=""; DIFFS.forEach((nm,i)=>{ const b=document.createElement("button"); b.className="dchip"+(i===(S.diff||1)?" on":""); b.innerHTML=nm+' <small>×'+DMULT[i]+'</small>'; b.onclick=()=>{ S.diff=i; save(); renderDiff(); toast("Schwierigkeit: "+nm+" · Coins ×"+DMULT[i]); }; w.appendChild(b); }); }
-  function go(id){$$(".screen").forEach(s=>s.classList.remove("active")); $("#s-"+id).classList.add("active"); window.scrollTo(0,0);}
+  function go(id){penUhrStop(); $$(".screen").forEach(s=>s.classList.remove("active")); $("#s-"+id).classList.add("active"); window.scrollTo(0,0);}
   $$("[data-go]").forEach(b=>b.addEventListener("click",()=>{
     const g=b.dataset.go;
     if(g==="penalty") startPenalty();
@@ -474,26 +485,54 @@
   }
   function resetKB(){const k=$("#pnKeeper"),b=$("#pnBall"); k.style.transition="none"; b.style.transition="none"; k.style.left="50%"; k.style.top="44%"; k.style.transform="translate(-50%,-50%)"; b.style.left="50%"; b.style.bottom="5%"; b.style.top="auto"; b.style.transform="translate(-50%,0)"; void k.offsetWidth; k.style.transition=""; b.style.transition="";}
   function setZones(on){$$("#pnZones .zone").forEach(z=>z.classList.toggle("pick",on));}
+  /* Schussuhr: 10 Sekunden für den eigenen Elfmeter, danach ist er verschossen. */
+  const PEN_ZEIT=10000;
+  let penUhr=null;
+  function penUhrStop(){ if(penUhr){cancelAnimationFrame(penUhr); penUhr=null;} const el=$("#pnClock"); if(el){el.hidden=true; el.classList.remove("eilig");} }
+  function penUhrStart(){
+    penUhrStop();
+    const el=$("#pnClock"), bar=$("#pnClockBar"), num=$("#pnClockNum");
+    let rest=PEN_ZEIT, last=performance.now();
+    el.hidden=false; bar.style.width="100%"; num.textContent="10.0";
+    const tick=(now)=>{
+      if(!PEN||PEN.done||PEN.busy||PEN.turn!=="you"||MODE!=="pen"){ penUhrStop(); return; }
+      /* Große Sprünge abschneiden: wer die App kurz weglegt, soll nicht
+       * sofort verschossen haben — im Hintergrund läuft die Uhr nicht. */
+      rest-=Math.min(250, now-last); last=now;
+      if(rest<=0){ penUhrStop(); shoot(-1,true,true); return; }
+      num.textContent=(rest/1000).toFixed(1);
+      bar.style.width=(rest/PEN_ZEIT*100)+"%";
+      el.classList.toggle("eilig",rest<=3000);
+      penUhr=requestAnimationFrame(tick);
+    };
+    penUhr=requestAnimationFrame(tick);
+  }
+
   function nextTurn(){
     if(PEN.done) return; resetKB();
     const isYou=PEN.turn==="you"; setZones(isYou);
-    if(isYou){$("#pnHint").innerHTML=PEN.sudden?"<b>Sudden Death!</b> Tippe eine Ecke.":"Dein Schuss – tippe eine Ecke.";}
-    else{$("#pnHint").innerHTML=`<b>${PEN.opp}</b> schießt…`; setTimeout(()=>shoot(Math.floor(Math.random()*6),false),800);}
+    if(isYou){$("#pnHint").innerHTML=PEN.sudden?"<b>Sudden Death!</b> Tippe eine Ecke – 10 Sekunden!":"Dein Schuss – tippe eine Ecke. Du hast 10 Sekunden."; penUhrStart();}
+    else{penUhrStop(); $("#pnHint").innerHTML=`<b>${PEN.opp}</b> schießt…`; setTimeout(()=>shoot(Math.floor(Math.random()*6),false),800);}
   }
   $$("#pnZones .zone").forEach(z=>z.addEventListener("click",()=>{
     const zz=parseInt(z.dataset.z,10);
     if(!PEN||PEN.turn!=="you"||PEN.busy) return; shoot(zz,true);
   }));
   function pickKeeper(zone,against){ const th=0.62-(against?((S.diff||1)-1)*0.06:0); if(Math.random()<th) return Math.floor(Math.random()*6); return Math.random()<0.5?zone:Math.floor(Math.random()*6); }
-  function shoot(zone,isYou){
-    if(PEN.busy) return; PEN.busy=true; setZones(false);
-    const kz=pickKeeper(zone,isYou), tc=zoneCoord(zone), kc=zoneCoord(kz);
+  function shoot(zone,isYou,zuSpaet){
+    if(PEN.busy) return; PEN.busy=true; setZones(false); penUhrStop();
+    const kz=zuSpaet?Math.floor(Math.random()*6):pickKeeper(zone,isYou), kc=zoneCoord(kz);
     const b=$("#pnBall"),k=$("#pnKeeper"),fl=$("#pnFlash");
     k.style.left=kc.x+"%"; k.style.top=kc.y+"%"; k.style.transform="translate(-50%,-50%) rotate("+(kz%3===0?-25:kz%3===2?25:0)+"deg)";
-    b.style.transition="all .45s cubic-bezier(.35,0,.5,1)"; b.style.bottom="auto"; b.style.left=tc.x+"%"; b.style.top=tc.y+"%"; b.style.transform="translate(-50%,-50%) scale(.72)";
-    const scored=kz!==zone;
+    if(zuSpaet){ /* Der Ball bleibt liegen — kein Schuss, kein Tor. */
+      b.style.transition="all .45s ease"; b.style.transform="translate(-50%,0) scale(.86)";
+    } else {
+      const tc=zoneCoord(zone);
+      b.style.transition="all .45s cubic-bezier(.35,0,.5,1)"; b.style.bottom="auto"; b.style.left=tc.x+"%"; b.style.top=tc.y+"%"; b.style.transform="translate(-50%,-50%) scale(.72)";
+    }
+    const scored=!zuSpaet&&kz!==zone;
     setTimeout(()=>{
-      fl.className="flash show "+(scored?"goal":"save"); fl.textContent=scored?"TOR!":"GEHALTEN!";
+      fl.className="flash show "+(scored?"goal":"save"); fl.textContent=zuSpaet?"ZU SPÄT!":(scored?"TOR!":"GEHALTEN!");
       const idx=PEN.round*2+(isYou?0:1);
       if(isYou){if(scored)PEN.you++; $("#pnYouSc").textContent=PEN.you;} else {if(scored)PEN.oppSc++; $("#pnOppSc").textContent=PEN.oppSc;}
       setDot(idx,scored);
@@ -513,7 +552,7 @@
     nextTurn();
   }
   function finish(win){
-    PEN.done=true; setZones(false); $("#pnHint").textContent=""; $("#pnResult").style.display="block";
+    PEN.done=true; setZones(false); penUhrStop(); $("#pnHint").textContent=""; $("#pnResult").style.display="block";
     const t=$("#pnResultTxt");
     if(win){t.style.color="var(--grass)"; t.textContent="✅ "+$("#pnYouName").textContent+" "+PEN.you+":"+PEN.oppSc;}
     else{t.style.color="var(--danger)"; t.textContent="❌ "+PEN.you+":"+PEN.oppSc+" "+$("#pnOppName").textContent;}
