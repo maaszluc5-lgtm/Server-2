@@ -190,8 +190,7 @@
     </div>
     <div class="diffbar"><span class="dl">Schwierigkeit</span><div class="dchips" id="dChips"></div></div>
     <div class="grid" style="margin-top:6px">
-      <button class="tile" data-go="penalty"><span class="glow"></span><div class="ic">🥅</div><div><div class="t">Elfmeter</div><div class="d">Schnelles Duell · Best of 5</div></div></button>
-      <button class="tile" data-go="solo"><span class="glow"></span><div class="ic">⏱️</div><div><div class="t">10 Sekunden</div><div class="d">Allein vorm Tor · Serie</div></div></button>
+      <button class="tile" data-go="penalty"><span class="glow"></span><div class="ic">🥅</div><div><div class="t">Elfmeter</div><div class="d">Allein vorm Tor · 10 Sekunden</div></div></button>
       <button class="tile" data-go="packs"><span class="glow"></span><div class="ic">📦</div><div><div class="t">Tüte öffnen</div><div class="d">Coins gegen Karten</div></div></button>
       <button class="tile" data-mode="WM" data-go="tourney"><span class="glow"></span><div class="ic">🏆</div><div><div class="t">WM</div><div class="d">Jedes Spiel selbst</div></div></button>
       <button class="tile" data-mode="EM" data-go="tourney"><span class="glow"></span><div class="ic">🌍</div><div><div class="t">EM</div><div class="d">Europas Beste</div></div></button>
@@ -437,8 +436,7 @@
   function go(id){penUhrStop(); $$(".screen").forEach(s=>s.classList.remove("active")); $("#s-"+id).classList.add("active"); window.scrollTo(0,0);}
   $$("[data-go]").forEach(b=>b.addEventListener("click",()=>{
     const g=b.dataset.go;
-    if(g==="penalty") startPenalty();
-    else if(g==="solo") startSolo();
+    if(g==="penalty") startElfmeter();
     else if(g==="lobby") openLobby();
     else if(g==="tourney") openTourney(b.dataset.mode);
     else if(g==="packs"){go("packs"); $("#packStage").innerHTML=""; $("#packHint").textContent="";}
@@ -573,10 +571,10 @@
       save(); renderHome(); go("home");
     }});
   }
-  function startSolo(){
+  function startElfmeter(){
     const pool=NATIONS; const you=pool[Math.floor(Math.random()*pool.length)];
     let opp; do{opp=pool[Math.floor(Math.random()*pool.length)];}while(opp.n===you.n);
-    PITCH.solo(you,opp,{title:"10 Sekunden",tag:"Allein vorm Tor · "+you.f+" "+you.n,nextLabel:"Zurück",onEnd(serie){
+    PITCH.solo(you,opp,{title:"Elfmeter",tag:you.f+" "+you.n+" · 10 Sekunden pro Schuss",nextLabel:"Zurück",onEnd(serie){
       const c=gcoin(8+serie*14); addCoins(c);
       if(serie>(S.soloBest||0)){ S.soloBest=serie; toast("🏅 Neue Bestserie: "+serie+" · +"+c+" 🪙"); }
       else toast(serie+(serie===1?" Tor":" Tore")+" · +"+c+" 🪙");
@@ -962,7 +960,7 @@
          aimx:0,aimy:-1,camx:W/2,camy:H*0.72,diff:(S.diff||1),shotDir:[0,-1],
          pen:{zeit:SOLO_ZEIT,serie:0,versuch:0,aus:true,gkAus:0,hecht:null}};
       E.penSchuetze=(E.players[10]&&E.players[10].rating>E.players[9].rating)?10:9;
-      $("#ptTitle").textContent=opts.title||"10 Sekunden"; $("#ptTag").textContent=opts.tag||"";
+      $("#ptTitle").textContent=opts.title||"Elfmeter"; $("#ptTag").textContent=opts.tag||"";
       $("#ptYouName").textContent="Tore"; $("#ptOppName").textContent=opp.n;
       $("#ptYouSc").textContent="0"; $("#ptOppSc").textContent="—";
       $("#ptResult").style.display="none";
