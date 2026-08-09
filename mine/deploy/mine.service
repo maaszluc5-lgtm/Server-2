@@ -1,0 +1,20 @@
+[Unit]
+Description=Mine — Erze graben, Schmuck schmieden
+Documentation=https://github.com/maaszluc5-lgtm/Server-2
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/root/mine
+Environment=PORT=4100
+# Nur lokal erreichbar; nach außen geht es über Nginx mit HTTPS.
+Environment=MINE_DATA=/root/mine/data
+ExecStart=/usr/bin/env node server.js
+Restart=always
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

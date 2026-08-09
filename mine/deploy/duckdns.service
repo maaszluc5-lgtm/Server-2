@@ -1,0 +1,8 @@
+[Unit]
+Description=DuckDNS-Adresse aktualisieren
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/root/mine/deploy/duckdns-update.sh

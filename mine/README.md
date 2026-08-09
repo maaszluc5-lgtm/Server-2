@@ -14,11 +14,25 @@ cd mine
 PORT=4100 node server.js       # dauerhaft: pm2 start server.js --name mine
 ```
 
-Dann `http://localhost:4100` öffnen. Node ab Version 22.5 genügt — SQLite ist
-dort eingebaut, es gibt keine Abhängigkeiten. Die Datenbank legt sich beim
-ersten Start unter `data/mine.db` selbst an.
+Dann `http://localhost:4100` öffnen. Es gibt keine Abhängigkeiten: ab Node 22.5
+nimmt der Server das eingebaute SQLite, darunter (etwa Node 20) legt er je
+Spieler eine Datei unter `data/spieler/` an. Beides entsteht beim ersten Start
+von selbst, und der Server sagt beim Hochfahren, welchen Weg er nimmt.
 
 Port 4100, damit Torjäger auf 4000 unberührt bleibt.
+
+## Ins Netz stellen
+
+Für `https://minesgames.duckdns.org` gibt es ein fertiges Setup unter
+[deploy/](deploy/): DuckDNS hält die Adresse aktuell, Nginx steht davor,
+Let's Encrypt liefert das Zertifikat.
+
+```bash
+cd /root/mine/deploy && DUCKDNS_TOKEN='dein-token' ./setup.sh
+```
+
+Der Token wird nach `/etc/duckdns/token` geschrieben und steht nirgends im
+Repo. Einzelheiten und Fehlersuche: [deploy/README.md](deploy/README.md).
 
 ## Was drin ist
 
@@ -79,7 +93,8 @@ mine/
 ├── js/game.js      Spielstand, Regeln, Sicherung
 ├── js/ui.js        zeichnen und auf Tippen reagieren
 ├── server.js       Dateien + /api
-└── data/mine.db    SQLite, legt sich selbst an
+├── deploy/         Domain, Nginx, HTTPS (siehe deploy/README.md)
+└── data/           Spielstände, legen sich selbst an
 ```
 
 Der Berg wird nicht gespeichert, sondern aus einem Startwert berechnet: jedes
