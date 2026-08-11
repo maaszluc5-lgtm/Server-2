@@ -81,6 +81,12 @@ fi
 sagen "Nginx einrichten"
 
 if ! command -v nginx >/dev/null; then
+  # Hört schon etwas anderes auf Port 80, hilft Nginx nicht weiter.
+  BELEGT="$(ss -lptnH 'sport = :80' 2>/dev/null | head -1 || true)"
+  if [ -n "$BELEGT" ]; then
+    echo "  Auf Port 80 läuft bereits: $BELEGT"
+    fehler "Port 80 ist belegt. Erst das dortige Programm beenden oder Nginx von Hand einrichten."
+  fi
   echo "  Nginx fehlt, wird installiert…"
   apt-get update -qq && apt-get install -y -qq nginx
 fi
