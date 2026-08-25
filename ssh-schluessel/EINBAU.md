@@ -3,6 +3,18 @@
 Ersetzt das feste Passwort auf `/ssh/` durch einen Schlüssel, den du auf dem
 Server mit `key` erzeugst.
 
+> **Der kurze Weg:** `installieren.sh` enthält alles — beide Programmdateien,
+> die Rechte, die PowerShell-Einbindung und eine Probe. Eine Datei auf den
+> Server, einmal ausführen:
+>
+> ```bash
+> sudo PORTAL_BENUTZER=<benutzer-unter-dem-das-portal-laeuft> bash installieren.sh
+> ```
+>
+> Danach bleibt nur noch der [Einbau ins Portal](#einbau-ins-portal), den
+> das Skript zum Schluss auch nochmal ausdruckt. Der Rest dieser Datei ist
+> die Handarbeit-Fassung und das Nachschlagewerk.
+
 ## Regeln
 
 | Was | Wert |
@@ -146,6 +158,19 @@ Alles über Umgebungsvariablen, für Portal und `key` gleich setzen:
 
 `SCHLUESSEL_RUHE_STUNDEN=24` heißt: passiert einen Tag lang nichts, fängt die
 Leiter wieder bei 10 min an. Die **Dauersperre wird davon nie** aufgehoben.
+
+## Dateien
+
+| Datei | Zweck |
+|-------|-------|
+| `installieren.sh` | Alles in einem — richtet den Server komplett ein |
+| `schluessel.js` | Die Logik, als Node-Modul und als Kommandozeile |
+| `key.ps1` | `key` für PowerShell Core |
+| `bauen.py` | Baut `installieren.sh` neu aus den beiden Quelldateien |
+
+`installieren.sh` trägt Kopien von `schluessel.js` und `key.ps1` in sich.
+Änderst du eine davon, danach `python3 bauen.py` laufen lassen — sonst
+installiert das Skript weiter den alten Stand.
 
 ## Technisches
 
